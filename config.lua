@@ -2,6 +2,9 @@ vim.fn.setenv('NVIM_CMD', "echo 'Failed to connect to nvim.\nQuitting.'; exit")
 vim.fn.setenv('NVIM_LISTEN_ADDRESS', vim.v.servername)
 vim.fn.setenv('GIT_EDITOR', 'nvr --servername ' .. vim.v.servername .. ' -cc split --remote-wait')
 
+-- Let's hope we can enable this without vimscript sometime
+vim.cmd'filetype on'
+
 if not require'private'.try_run('CONFIG') then
     return
 end
@@ -32,7 +35,6 @@ vim.o.foldlevelstart=99
 
 -- global options
 vim.g['vimsyn_embed'] = 'l'
-vim.g['do_filetype_lua'] = 1
 vim.g['did_load_filetypes'] = 0
 vim.g['dashboard_default_executive'] = 'telescope'
 vim.g['qs_highlight_on_keys'] = {'f', 'F', 't', 'T'}

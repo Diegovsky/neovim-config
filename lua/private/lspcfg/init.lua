@@ -9,6 +9,7 @@ vim.o.completeopt = "menuone,noselect"
 
 M.servers = {
   "clangd",
+  -- "ccls",
   "dartls",
   "emmet_ls",
   "gopls",
@@ -16,7 +17,7 @@ M.servers = {
   "lemminx", -- xml server
   "pyright",
   "rust_analyzer",
-  "solargraph",
+  "solargraph", -- ruby lsp
   "sumneko_lua",
   "teal_ls",
   "vala_ls",

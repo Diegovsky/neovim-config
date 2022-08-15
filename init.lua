@@ -1,4 +1,3 @@
-
 -- Try to set language to english because I don't like to mix my language with
 -- programming
 vim.cmd "language en_GB.utf8"

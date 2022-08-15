@@ -42,7 +42,7 @@ kutils.declmaps('n', {
   ['<M-j>'] = 'TmuxNavigateDown';
   ['<M-k>'] = 'TmuxNavigateUp';
   ['<M-l>'] = 'TmuxNavigateRight';
-  ['<leader>oo'] = 'ChadOpen';
+  ['<leader>oo'] = 'CHADopen';
   ['<leader>bw'] = function()
     local buflist = vim.fn.getbufinfo({buflisted = 1})
     local c = 0
