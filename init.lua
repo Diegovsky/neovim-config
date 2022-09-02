@@ -5,6 +5,9 @@ vim.cmd "language en_GB.utf8"
 NVIM_CONFIG_FOLDER = NVIM_CONFIG_FOLDER or vim.fn.stdpath "config" .. "/"
 NVIM_INIT_FILE = NVIM_CONFIG_FOLDER .. "/init.lua"
 
+local boostrap = require 'private.bootstrap'
+boostrap.boostrap()
+
 dofile(NVIM_CONFIG_FOLDER..'/config.lua')
 
 vim.g.nvim_config_folder = NVIM_CONFIG_FOLDER
@@ -272,7 +275,11 @@ require("packer").startup(function(use)
       end
     end,
   }
+
+  boostrap.ensure_packer(use)
 end)
+
+boostrap.prevent_init()
 
 -- Bootstrap fennel support
 require "hotpot"
