@@ -34,12 +34,8 @@ function M.setup_server(name, opt)
       debounce_text_changes = 150,
     },
   }
-  local profile = require 'private.lspcfg.profiles'.active_profiles[name]
-  local profile_args
-  if profile then
-     profile_args = profile.getargs()
-  end
-  args = vim.tbl_deep_extend("force", args, profile_args or {}, opt or {})
+  args = require'private.lspcfg.profiles'.apply_profile(name, args)
+  args = vim.tbl_deep_extend('force', args, opt or {})
   if name == "rust_analyzer" then
     require("rust-tools").setup { server = args }
   elseif name == 'jdtls' then

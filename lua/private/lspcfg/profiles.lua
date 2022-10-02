@@ -20,8 +20,10 @@ M.default_profiles = {
 }
 
 M.get_current_profile_name = function()
+  -- Get attached clients to current buffer
   local clients = vim.lsp.buf_get_clients(0)
   for _, client in ipairs(clients) do
+    -- Returns the first profile name found for any client
     local profile = M.active_profiles[client.name]
     if profile then
       return profile.name
@@ -32,7 +34,7 @@ end
 M.active_profiles = {}
 
 M.activate_profile = function(name)
-  local profile = M[name]
+  local profile = M.profiles[name]
   if profile == nil then
     print("Profile "..name.." does not exist!")
     return
@@ -45,11 +47,14 @@ M.activate_profile = function(name)
   require'private.lspcfg'.setup_server(profile.server_name)
 end
 
+M.profiles = {}
+
 local function create_profile(name, server_name, getargs)
   --- @class Profile
   --- @field name string
   --- @field server_name string
   --- @field getargs function()
+  --- Profile prototype
   local profile = {
     name = name,
     server_name = server_name,
@@ -60,11 +65,21 @@ local function create_profile(name, server_name, getargs)
       M.activate_profile(name)
     end
   }
-  if M[name] then
+  if M.profiles[name] then
     error("Profile "..name.." already exists!")
     return
   end
-  M[name] = profile
+  M.profiles[name] = profile
+end
+
+function M.apply_profile(lspserver, args)
+  local profile = M.active_profiles[lspserver]
+  -- If there is an active profile, apply its args
+  if profile then
+     local profile_args = profile.getargs()
+     args = vim.tbl_deep_extend("force", args, profile_args)
+  end
+  return args
 end
 
 --- Profiles

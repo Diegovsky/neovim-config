@@ -24,6 +24,8 @@ require("packer").startup(function(use)
   use "rktjmp/hotpot.nvim"
   -- Cool prompts for vim.ui
   use { "stevearc/dressing.nvim" }
+  -- Cool notifications
+  use { "rcarriga/nvim-notify" }
   -- Git plugin
   use {
     "TimUntersberger/neogit",
@@ -49,10 +51,10 @@ require("packer").startup(function(use)
   use "elihunter173/dirbuf.nvim"
 
   -- dhall support
-  use "vmchale/dhall-vim"
+  -- use "vmchale/dhall-vim"
 
   use "neovim/nvim-lspconfig"
-  use "williamboman/nvim-lsp-installer"
+  use "williamboman/mason.nvim"
   use { "ms-jpq/chadtree", branch = "chad", run = "<cmd>CHADdeps" }
   use {
     "kyazdani42/nvim-web-devicons",
@@ -263,18 +265,7 @@ require("packer").startup(function(use)
       }
     end,
   }
-  use {
-    NVIM_CONFIG_FOLDER .. "/plugins/projection.nvim",
-    as = "projection-local",
-    config = function()
-      local _, err = pcall(function()
-        require("projection").init { enable_sorting = true, should_title = true }
-      end)
-      if err ~= nil then
-        print(err)
-      end
-    end,
-  }
+  boostrap.ensure_projection(use)
 
   boostrap.ensure_packer(use)
 end)

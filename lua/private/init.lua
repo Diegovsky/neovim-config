@@ -12,6 +12,23 @@ CALL_ONCE = setmetatable({}, {
 
 M.call_once = CALL_ONCE
 
+--- Merges two map tables and their list parts in order.
+--- The first argument decides what to do if the same
+--- key is found in multiple tables.
+--- @param behaviour 'error'|'keep'|'force'
+--- @vararg table
+function M.tbl_join(behaviour, ...)
+    local merged = vim.tbl_extend(behaviour, ...)
+    local args = {...}
+    local size = select('#', ...)
+    for i = 1, size do
+        for _, v in ipairs(args[i]) do
+            merged[#merged+1] = v
+        end
+    end
+    return merged
+end
+
 function M.openTerm(cmd)
   local splits = require'private.splits'
   splits.split()

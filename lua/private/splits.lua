@@ -26,4 +26,21 @@ function M.split(bufname)
   end
 end
 
+local splitstates = {}
+function M.togglesplit(bufname, on_window)
+    local winnr = splitstates[bufname]
+    if winnr then
+        if vim.api.nvim_win_is_valid(winnr) then
+            vim.api.nvim_win_close(winnr, true)
+            splitstates[bufname] = nil
+            return
+        end
+        splitstates[bufname] = nil
+    end
+    require'private.splits'.split(bufname)
+    winnr = vim.fn.win_getid(vim.fn.winnr())
+    on_window(winnr)
+    splitstates[bufname] = winnr
+end
+
 return M
