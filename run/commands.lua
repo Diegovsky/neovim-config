@@ -13,6 +13,12 @@ local function command(name, cb, args_)
   args[name] = args_
 end
 
+local function simplecmd(name, cb)
+  command(name, cb, {
+    nargs=0,
+  }) 
+end
+
 command('Lua', function(tbl)
   local body = tbl.args
   local _, err = pcall(loadstring(("require'private'.debug(%s)"):format(body)))
@@ -68,7 +74,7 @@ command('LspSetup', function(tbl)
   require'private.lspcfg'.setup_server(tbl.fargs[1])
 end, {nargs = '*'})
 
-command('LspToggleLog', function(tbl)
+simplecmd('LspToggleLog', function(tbl)
     local logpath = vim.lsp.get_log_path()
     if not logpath then
         print"Couldn't get lsp log path"
@@ -86,7 +92,9 @@ command('LspToggleLog', function(tbl)
             })
         end
     end)
-end, {nargs = 0})
+end)
+
+simplecmd('SwapTerm', require'private.term'.swap)
 
 for name in pairs(commands) do
   create_command(name)

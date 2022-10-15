@@ -35,15 +35,20 @@ M.active_profiles = {}
 
 M.activate_profile = function(name)
   local profile = M.profiles[name]
+
+  log('Trying to enable lsp profile '..name)
+
   if profile == nil then
     print("Profile "..name.." does not exist!")
     return
   end
   if M.active_profiles[profile.server_name] == profile then
     -- Profile already active
+    log('Profile already active')
     return
   end
   M.active_profiles[profile.server_name] = profile
+  log('Profile '..name..' enabled')
   require'private.lspcfg'.setup_server(profile.server_name)
 end
 

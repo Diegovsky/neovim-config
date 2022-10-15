@@ -48,12 +48,8 @@ end
 
 ---@diagnostic disable-next-line: unused-local
 M.on_attach = function(_client, bufnr)
-  if bufnr == nil then
-    bufnr = vim.api.nvim_get_current_buf()
-  end
-
   local opts = { noremap = true, silent = true, buffer = bufnr }
-  require'private.lspcfg.cmp'.cmp_init()
+  require'private.lspcfg.cmp'.cmp_init(true)
 
   require("private.keybindutils").declmaps("n", {
     ["gD"] = vim.lsp.buf.declaration,
@@ -93,12 +89,9 @@ M.quirks = {
 }
 
 M.init = function(force)
-  if not force and not require("private").try_run "LSP_INIT" then
+  if not force and not require("private").run_once "LSP_INIT" then
     return
   end
-  require'nvim-lsp-installer'.setup {
-    automatic_installaction = true,
-  }
   for _, lsp in ipairs(M.servers) do
     if lsp == nil then
       print(_, "nil")

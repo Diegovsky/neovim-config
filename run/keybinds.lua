@@ -1,26 +1,18 @@
-local private = require'private'
 local kutils = require'private.keybindutils'
 local keymap = vim.keymap.set
 local splits = require'private.splits'
 
-keymap('t', '<esc>', '<C-\\><C-n>')
+require'private.term'.register_keybinds()
 
-keymap({'n', 'v', 'o'}, 'qq', '%', {remap=true})
--- Rebinds
-kutils.declmaps({ 'n', 'v' }, {
-  ['<M-x>'] = ':e %:h/',
-}, kutils.noop(), kutils.noop(), {remap=true})
-
----@diagnostic disable-next-line: missing-parameter
 kutils.declmaps('n', {
-  ['<leader>ot'] = 'silent !alacritty&';
-  ['<leader>oT'] = private.openTerm;
   ['<leader>ol'] = require'private.logbuf'.toggle;
   ['<leader>os'] = 'SymbolsOutline';
   ['<M-i>'] =  function() splits.state = false end;
   ['<M-o>'] =  function() splits.state = true end;
   ['<M-n>'] = splits.split;
+  ['<M-x>'] = 'edit %:r/',
   ['<C-s>'] = 'write';
+  ['<C-a>'] = 'norm gg"+yG`a';
   ['<leader>hrr'] = 'luafile '..NVIM_INIT_FILE;
   ['<leader>hhr'] = function() package.loaded['private.lspcfg'] = nil; dofile(NVIM_INIT_FILE) end;
   ['<leader>hpi'] = 'PackerInstall';
@@ -87,9 +79,9 @@ kutils.declmaps('n',
  kutils.prefix"<leader>p"
 )
 
-do
-  local gitcmd_prefix = "<leader>g"
-  local gitcmds = {
+kutils.declmaps(
+  'n',
+  {
     ['A'] = 'add -A';
     ['c'] = 'commit';
     ['ca'] = 'commit --amend';
@@ -97,17 +89,13 @@ do
     ['u'] = 'push';
     ['a'] = 'add %';
     ['s'] = 'status';
-  }
-  kutils.declmaps(
-    'n',
-    gitcmds,
-    kutils.vimcmd("Git "),
-    kutils.prefix(gitcmd_prefix)
-  )
-end
+  },
+  kutils.vimcmd("Git "),
+  kutils.prefix("<leader>g")
+)
 
 -- Omnifunc mappings
-if require'private'.try_run('omnifunc-bindings') then
+if require'private'.run_once('omnifunc-bindings') then
   local opt = {expr=true, silent=true}
   local keymap = function(key, expr) keymap("i", key, kutils.not_lsp(expr, key), opt) end
   keymap("<C-Space>", "<C-x><C-o>")
@@ -129,3 +117,20 @@ kutils.declmaps('i', {
   p = 'p';
   P = 'P';
 }, kutils.fmt('<cmd>norm h%sll<cr>'), kutils.fmt("<C-%s>"))
+
+-- allow to quit terminal mode using ESC
+keymap('t', '<esc>', '<C-\\><C-n>')
+-- use qq as a bracket navigator
+keymap({'n', 'v', 'o'}, 'qq', '%', {remap=true})
+
+-- Remap line shift commands to more sane behaviours
+kutils.declremaps('v', {
+  ['<'] = '<gv',
+  ['>'] = '>gv',
+})
+
+kutils.declremaps('n', {
+  ['<'] = '<<',
+  ['>'] = '>>',
+})
+

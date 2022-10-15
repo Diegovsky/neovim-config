@@ -54,7 +54,10 @@ require("packer").startup(function(use)
   -- use "vmchale/dhall-vim"
 
   use "neovim/nvim-lspconfig"
-  use "williamboman/mason.nvim"
+  use { "williamboman/mason.nvim", config = function()
+    require'mason'.setup() 
+    require'mason-lspconfig'.setup() 
+  end, requires={'williamboman/mason-lspconfig.nvim'}}
   use { "ms-jpq/chadtree", branch = "chad", run = "<cmd>CHADdeps" }
   use {
     "kyazdani42/nvim-web-devicons",
@@ -145,7 +148,7 @@ require("packer").startup(function(use)
   use {
     "simrat39/symbols-outline.nvim",
     config = function()
-      -- vim.g.symbols_outline = {}
+      require'symbols-outline'.setup()
     end,
   }
   -- LSP Loading progress

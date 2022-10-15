@@ -28,8 +28,8 @@ end
 
 --- @param mode string|string[]
 --- @param t table<string, DeclarativeMapping>
---- @param mapval fun(string):string|nil
---- @param mapkey fun(string):string|nil
+--- @param mapval (fun(string):string)|nil
+--- @param mapkey (fun(string):string)|nil
 --- @param opts table<string, string>|nil
 function M.declmaps(mode, t, mapval, mapkey, opts)
   mapval = mapval or M.vimcmd()
@@ -39,7 +39,7 @@ function M.declmaps(mode, t, mapval, mapkey, opts)
   end
 
   if opts ~= nil then
-    opts = vim.tbl_extend('force', opts or {}, {noremap=true})
+    opts = vim.tbl_extend('keep', opts or {}, {noremap=true})
   end
 
   for key, value in pairs(t) do
@@ -49,6 +49,12 @@ function M.declmaps(mode, t, mapval, mapkey, opts)
     end
     vim.keymap.set(mode, key, value, opts)
   end
+end
+
+--- @param mode string|string[]
+--- @param t table<string, DeclarativeMapping>
+function M.declremaps(mode, t)
+  M.declmaps(mode, t, M.noop(), M.noop(), {noremap=false})
 end
 
 --- @param filetype string|string[]
@@ -75,7 +81,6 @@ function M.not_lsp(expr, fallback)
     end,vim.lsp.get_active_clients({bufnr=0}))
 
     if #clients == 0 and vim.fn.pumvisible() == 1 then
-      print(clients)
       return require'private'.t(expr)
     else
       return require'private'.t(fallback)

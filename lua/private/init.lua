@@ -29,16 +29,6 @@ function M.tbl_join(behaviour, ...)
     return merged
 end
 
-function M.openTerm(cmd)
-  local splits = require'private.splits'
-  splits.split()
-  vim.cmd('terminal '..(cmd or ""))
-end
-
-function M.nativeTerm(cmd, term)
-  vim.cmd('!'..(term or 'alacritty')..' '..cmd)
-end
-
 function M.normpath(s)
   if s:sub(#s, #s) ~= "/" then
     return s .. "/"
@@ -47,7 +37,7 @@ function M.normpath(s)
 end
 
 --- @param gvarname string
-function M.try_run(gvarname)
+function M.run_once(gvarname)
   if CALL_ONCE(gvarname) then
     if CALL_ONCE[gvarname] == nil then
       CALL_ONCE[gvarname] = true
@@ -141,6 +131,12 @@ end
 function M.debug(...)
   print(vim.inspect(...))
   return ...
+end
+
+function log(...)
+  if DEBUG then
+    M.dbg(...)
+  end
 end
 
 function M.onft(ft, desc, func, ...)

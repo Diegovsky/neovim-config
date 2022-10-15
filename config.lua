@@ -5,7 +5,7 @@ vim.fn.setenv('GIT_EDITOR', 'nvr --servername ' .. vim.v.servername .. ' -cc spl
 -- Let's hope we can enable this without vimscript sometime
 vim.cmd'filetype on'
 
-if not require'private'.try_run('CONFIG') then
+if not require'private'.run_once('CONFIG') then
     return
 end
 vim.g.mapleader = " "
