@@ -55,9 +55,10 @@ require("packer").startup(function(use)
 
   use "neovim/nvim-lspconfig"
   use { "williamboman/mason.nvim", config = function()
-    require'mason'.setup() 
-    require'mason-lspconfig'.setup() 
+    require'mason'.setup()
+    require'mason-lspconfig'.setup()
   end, requires={'williamboman/mason-lspconfig.nvim'}}
+
   use { "ms-jpq/chadtree", branch = "chad", run = "<cmd>CHADdeps" }
   use {
     "kyazdani42/nvim-web-devicons",
@@ -84,36 +85,7 @@ require("packer").startup(function(use)
     run = "<cmd>TSUpdate",
     requires = {"nvim-treesitter/nvim-treesitter-textobjects"},
     config = function()
-      require("nvim-treesitter.configs").setup {
-        highlight = {
-          enable = true,
-        },
-        incremental_selection = {
-          enable = true,
-        },
-        indent = {
-          enable = true,
-          disable = { "python", "rust" },
-        },
-        yati = { enable = true },
-        autopairs = { enable = true },
-        textobjects = {
-          swap = {
-            enable = true,
-            swap_next = {
-              ["<leader>a"] = "@parameter.inner",
-            },
-            swap_previous = {
-              ["<leader>A"] = "@parameter.inner",
-            },
-          },
-          select = {
-            enable = true,
-            lookahead = true,
-            keymaps = {},
-          },
-        }
-      }
+      require("nvim-treesitter.configs").setup(require'private.plugcfg.treesitter')
     end,
   }
 
@@ -165,53 +137,7 @@ require("packer").startup(function(use)
   use {
     "nvim-telescope/telescope.nvim",
     config = function()
-      require("telescope").setup {
-        extensions = {
-          ["ui-select"] = {},
-        },
-        defaults = {
-          vimgrep_arguments = {
-            "rg",
-            "--color=never",
-            "--no-heading",
-            "--with-filename",
-            "--line-number",
-            "--column",
-            "--smart-case",
-          },
-          prompt_prefix = "> ",
-          selection_caret = "> ",
-          entry_prefix = "  ",
-          initial_mode = "insert",
-          selection_strategy = "reset",
-          sorting_strategy = "descending",
-          layout_strategy = "horizontal",
-          layout_config = {
-            horizontal = {
-              mirror = false,
-            },
-            vertical = {
-              mirror = false,
-            },
-          },
-          file_sorter = require("telescope.sorters").get_fuzzy_file,
-          file_ignore_patterns = { "build/" },
-          generic_sorter = require("telescope.sorters").get_generic_fuzzy_sorter,
-          winblend = 0,
-          border = {},
-          borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
-          color_devicons = true,
-          use_less = true,
-          path_display = {},
-          set_env = { ["COLORTERM"] = "truecolor" }, -- default = nil,
-          file_previewer = require("telescope.previewers").vim_buffer_cat.new,
-          grep_previewer = require("telescope.previewers").vim_buffer_vimgrep.new,
-          qflist_previewer = require("telescope.previewers").vim_buffer_qflist.new,
-
-          -- Developer configurations: Not meant for general override
-          buffer_previewer_maker = require("telescope.previewers").buffer_previewer_maker,
-        },
-      }
+      require("telescope").setup(require'private.plugcfg.telescope') 
     end,
   }
   use {
@@ -238,9 +164,17 @@ require("packer").startup(function(use)
       require("onedark").load()
     end,
   }
+  if require'private'.executable("silicon") then
+    -- transforms code into images.
+    use { "NarutoXY/silicon.lua", config=function ()
+      require'silicon'.setup(require'private.plugcfg.silicon')
+    end}
+  end
   -- use "Pocco81/DAPInstall.nvim"
   use "mfussenegger/nvim-dap"
-  use "rcarriga/nvim-dap-ui"
+  use { "rcarriga/nvim-dap-ui", config = function ()
+    require'dapui'.setup()
+  end}
   use "direnv/direnv.vim"
   use { "christoomey/vim-tmux-navigator" }
   use {

@@ -10,7 +10,7 @@ kutils.declmaps('n', {
   ['<M-i>'] =  function() splits.state = false end;
   ['<M-o>'] =  function() splits.state = true end;
   ['<M-n>'] = splits.split;
-  ['<M-x>'] = 'edit %:r/',
+  ['<M-x>'] = function () require'telescope.builtin'.find_files{cwd=vim.fn.expand'%:h'} end,
   ['<C-s>'] = 'write';
   ['<C-a>'] = 'norm gg"+yG`a';
   ['<leader>hrr'] = 'luafile '..NVIM_INIT_FILE;

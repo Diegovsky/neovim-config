@@ -16,7 +16,7 @@ end
 local function simplecmd(name, cb)
   command(name, cb, {
     nargs=0,
-  }) 
+  })
 end
 
 command('Lua', function(tbl)
@@ -74,7 +74,7 @@ command('LspSetup', function(tbl)
   require'private.lspcfg'.setup_server(tbl.fargs[1])
 end, {nargs = '*'})
 
-simplecmd('LspToggleLog', function(tbl)
+simplecmd('LspToggleLog', function()
     local logpath = vim.lsp.get_log_path()
     if not logpath then
         print"Couldn't get lsp log path"
@@ -93,6 +93,17 @@ simplecmd('LspToggleLog', function(tbl)
         end
     end)
 end)
+
+command('CodePrint', function()
+  if package.loaded.silicon then
+    require("silicon").visualise_api({to_clip = true})
+  else
+    print("Silicon is not installed :(")
+  end
+  end, {
+    nargs=0,
+    range=true,
+  })
 
 simplecmd('SwapTerm', require'private.term'.swap)
 

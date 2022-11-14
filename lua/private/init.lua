@@ -1,16 +1,11 @@
 local M = {}
 
-CALL_ONCE = setmetatable({}, {
-  __call = function (self, i)
-    if self[i] == nil or self[i] == 'fail' then
-      return true
-    else
-      return false
-    end
-  end
-})
-
-M.call_once = CALL_ONCE
+--- Returns true if an executable named `bin` exists on the system
+--- @param bin string
+--- @return boolean
+function M.executable(bin)
+  return vim.fn.executable(bin) == 1
+end
 
 --- Merges two map tables and their list parts in order.
 --- The first argument decides what to do if the same
@@ -29,28 +24,25 @@ function M.tbl_join(behaviour, ...)
     return merged
 end
 
-function M.normpath(s)
-  if s:sub(#s, #s) ~= "/" then
-    return s .. "/"
-  end
-  return s
-end
-
---- @param gvarname string
-function M.run_once(gvarname)
-  if CALL_ONCE(gvarname) then
-    if CALL_ONCE[gvarname] == nil then
-      CALL_ONCE[gvarname] = true
+CALL_ONCE = setmetatable({}, {
+  --- Returns `true` if function has not ran yet,
+  --- `false` if function has ran
+  __call = function (self, i)
+    if self[i] ~= 'ran' then
+      return true
+    else
+      self[i] = 'ran'
+      return false
     end
-    return true
-  else
-    return false
   end
-end
+})
+
+M.run_once = CALL_ONCE
+M.try_run = M.run_once
 
 function M.unrun(gvarname)
   local r = CALL_ONCE[gvarname]
-  CALL_ONCE[gvarname] = 'fail'
+  CALL_ONCE[gvarname] = 'cancelled'
   return r
 end
 
@@ -110,34 +102,11 @@ function M.randomboolean(chance)
   return math.random() <= chance
 end
 
-function M.ensuretype(value, type_, name)
-  name = name or "argument"
-  if type(value) ~= type_ then
-    error(("Expected `%s` to be `%s`, found %S"):format(name, type_, type(value)), 1)
-  end
-  return value
-end
-
-function M.ensurecallable(value, name)
-  if type(value) == "function" then
-    return value
-  elseif type(value) == "table" and getmetatable(value).__call then
-    return value
-  else
-    error(("Expected '%s' to be callable, got `%s` instead."):format(name, type(value)), 2)
-  end
-end
-
 function M.debug(...)
   print(vim.inspect(...))
   return ...
 end
 
-function log(...)
-  if DEBUG then
-    M.dbg(...)
-  end
-end
 
 function M.onft(ft, desc, func, ...)
   local args = {...}

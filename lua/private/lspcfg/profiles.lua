@@ -1,5 +1,11 @@
 local M = {}
 
+local function log(...)
+  if DEBUG then
+    require'private'.debug(...)
+  end
+end
+
 M.default_profiles = {
   vala_ls = {
     cmd = { "/usr/bin/vala-language-server" },
@@ -106,7 +112,7 @@ create_profile('sumneko_nvim', 'sumneko_lua', function()
         },
         diagnostics = {
           -- Get the language server to recognize the `vim` global
-          globals = {'vim'},
+          globals = {'vim', "DEBUG"},
         },
         workspace = {
           -- Make the server aware of Neovim runtime files

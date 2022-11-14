@@ -1,33 +1,15 @@
-return [[
-local dap_install = require'dap-install'
-local dbg_list = require("dap-install.api.debuggers").get_installed_debuggers()
-
-dap_install.setup()
-
 local askfor, cached = require'private'.askfor, require'private'.cached
-
-
 
 local dap = require'dap'
 local dapui = require'dapui'
-local keybinds = {
+local kutils = require'private.keybindutils'
+kutils.declmaps('n', {
   ["b"]  = dap.toggle_breakpoint,
   ["c"]  = dap.continue,
   ["so"] = dap.step_over,
   ["si"] = dap.step_into,
   ["o"]  = dapui.toggle,
-}
-
-require('dapui').setup()
-
--- DAP keybinds
-local key_prefix = '<leader>d%s'
-for key, func in pairs(keybinds) do
-  require'private'.keymapf {
-    combo = key_prefix:format(key);
-    run = func
-  }
-end
+}, nil, kutils.prefix('<leader>d'))
 
 -- DAP profiles
 local configurations = {
@@ -74,6 +56,5 @@ local configurations = {
 
 -- configurations.cpp = configurations.c
 for adapter, conf in pairs(configurations) do
-  dap_install.config(adapter,{ configurations = conf })
+ dap.configurations[adapter] = conf
 end
-]]
