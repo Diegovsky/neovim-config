@@ -17,15 +17,22 @@ vim.g.asyncrun_open = 12
 require("packer").startup(function(use)
   -- Sensible vim defaults
   use "tpope/vim-sensible"
-  use {
-    "tpope/vim-surround",
-  }
+  -- use "tpope/vim-surround"
+
   -- Fennel support
   use "rktjmp/hotpot.nvim"
   -- Cool prompts for vim.ui
   use { "stevearc/dressing.nvim" }
   -- Cool notifications
-  use { "rcarriga/nvim-notify" }
+  use { "rcarriga/nvim-notify", config = function()
+    vim.notify = function(msg, level)
+      if level == vim.log.levels.ERROR or level == vim.log.levels.WARN then
+        require'notify'(msg, level)
+      else
+        print(msg)
+      end
+    end
+  end }
   -- Git plugin
   use {
     "TimUntersberger/neogit",
@@ -110,7 +117,15 @@ require("packer").startup(function(use)
   use {
     "echasnovski/mini.nvim",
     config = function()
-      require("mini.pairs").setup(nil)
+      require("mini.pairs").setup({
+        mappings = {
+          ["'"] = { action = 'closeopen', pair = "''", neigh_pattern = '[^<\\][^>]', register = { cr = false } },
+
+          ["<"] = { action = 'open', pair = "<>", neigh_pattern = '[%a].', register = { cr = false } },
+          [">"] = { action = 'close', pair = "<>", neigh_pattern = '[%a].', register = { cr = false } },
+        }
+      })
+      require'mini.surround'.setup({})
     end,
   }
   use { "feline-nvim/feline.nvim", requires = {
@@ -124,12 +139,12 @@ require("packer").startup(function(use)
     end,
   }
   -- LSP Loading progress
-  use {
+  --[[ use {
     "j-hui/fidget.nvim",
     config = function()
       require("fidget").setup {}
     end,
-  }
+  } ]]
   use { "arrufat/vala.vim", ft = "vala" }
   use "nvim-lua/popup.nvim"
   use "nvim-lua/plenary.nvim"

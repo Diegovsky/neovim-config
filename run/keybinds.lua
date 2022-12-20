@@ -14,7 +14,7 @@ kutils.declmaps('n', {
   ['<C-s>'] = 'write';
   ['<C-a>'] = 'norm gg"+yG`a';
   ['<leader>hrr'] = 'luafile '..NVIM_INIT_FILE;
-  ['<leader>hhr'] = function() package.loaded['private.lspcfg'] = nil; dofile(NVIM_INIT_FILE) end;
+  ['<leader>hhr'] = function() package.loaded = {}; dofile(NVIM_INIT_FILE) end;
   ['<leader>hpi'] = 'PackerInstall';
   ['<leader>hpu'] = 'PackerUpdate';
   ['<C-space>']   = 'Telescope buffers';
@@ -67,6 +67,23 @@ do
   for key in winkeys:gmatch('.') do
     winCmd(key)
   end
+end
+
+do
+
+  local function scroll(key, offset)
+   if not require("noice.lsp").scroll(offset) then
+      return key
+    end
+  end
+
+  local function mapscroll(key, offset)
+    key = ('<C-%s>'):format(key)
+    keymap('n', key, function() scroll(key, offset) end, {silent = true, expr=true})
+  end
+
+  mapscroll('j', -4)
+  mapscroll('k', 4)
 end
 
 kutils.declmaps('n',
