@@ -2,9 +2,11 @@ if not require'private'.run_once('CONFIG') then
     return
 end
 
-vim.fn.setenv('NVIM_CMD', "echo 'Failed to connect to nvim.\nQuitting.'; exit")
-vim.fn.setenv('NVIM_LISTEN_ADDRESS', vim.v.servername)
-vim.fn.setenv('GIT_EDITOR', 'nvr --servername ' .. vim.v.servername .. ' -cc split --remote-wait')
+if Priv.executable('nvr') then
+  vim.fn.setenv('NVIM_CMD', "echo 'Failed to connect to nvim.\nQuitting.'; exit")
+  vim.fn.setenv('NVIM_LISTEN_ADDRESS', vim.v.servername)
+  vim.fn.setenv('GIT_EDITOR', 'nvr --servername ' .. vim.v.servername .. ' -cc split --remote-wait')
+end
 
 -- Let's hope we can enable this without vimscript sometime
 vim.cmd'filetype on'

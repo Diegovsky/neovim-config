@@ -1,14 +1,18 @@
 -- Try to set language to english because I don't like to mix my language with
 -- programming
-vim.cmd "language en_GB.utf8"
+
+pcall(vim.cmd, "language en_GB.utf8")
 
 NVIM_CONFIG_FOLDER = NVIM_CONFIG_FOLDER or vim.fn.stdpath "config" .. "/"
 NVIM_INIT_FILE = NVIM_CONFIG_FOLDER .. "/init.lua"
 
+--- @type Priv
+Priv = require'private'
+
 local boostrap = require 'private.bootstrap'
 boostrap.boostrap()
 
-dofile(NVIM_CONFIG_FOLDER..'/config.lua')
+dofile(NVIM_CONFIG_FOLDER .. '/config.lua')
 
 vim.g.nvim_config_folder = NVIM_CONFIG_FOLDER
 vim.g.nvim_init_file = NVIM_INIT_FILE
@@ -27,7 +31,7 @@ require("packer").startup(function(use)
   use { "rcarriga/nvim-notify", config = function()
     vim.notify = function(msg, level)
       if level == vim.log.levels.ERROR or level == vim.log.levels.WARN then
-        require'notify'(msg, level)
+        require 'notify' (msg, level)
       else
         print(msg)
       end
@@ -61,10 +65,12 @@ require("packer").startup(function(use)
   -- use "vmchale/dhall-vim"
 
   use "neovim/nvim-lspconfig"
+  use "onsails/lspkind.nvim"
+
   use { "williamboman/mason.nvim", config = function()
-    require'mason'.setup()
-    require'mason-lspconfig'.setup()
-  end, requires={'williamboman/mason-lspconfig.nvim'}}
+    require 'mason'.setup()
+    require 'mason-lspconfig'.setup()
+  end, requires = { 'williamboman/mason-lspconfig.nvim' } }
 
   use { "ms-jpq/chadtree", branch = "chad", run = "<cmd>CHADdeps" }
   use {
@@ -90,9 +96,9 @@ require("packer").startup(function(use)
   use {
     "nvim-treesitter/nvim-treesitter",
     run = "<cmd>TSUpdate",
-    requires = {"nvim-treesitter/nvim-treesitter-textobjects"},
+    requires = { "nvim-treesitter/nvim-treesitter-textobjects" },
     config = function()
-      require("nvim-treesitter.configs").setup(require'private.plugcfg.treesitter')
+      require("nvim-treesitter.configs").setup(require 'private.plugcfg.treesitter')
     end,
   }
 
@@ -119,13 +125,34 @@ require("packer").startup(function(use)
     config = function()
       require("mini.pairs").setup({
         mappings = {
-          ["'"] = { action = 'closeopen', pair = "''", neigh_pattern = '[^<\\][^>]', register = { cr = false } },
+          ["'"] = { action = 'closeopen', pair = "''", neigh_pattern = '[^<\\&][^>]', register = { cr = false } },
 
           ["<"] = { action = 'open', pair = "<>", neigh_pattern = '[%a].', register = { cr = false } },
           [">"] = { action = 'close', pair = "<>", neigh_pattern = '[%a].', register = { cr = false } },
         }
       })
-      require'mini.surround'.setup({})
+      require 'mini.surround'.setup({
+          custom_surroundings = {
+              ['('] = { output = { left = '( ', right = ' )' } },
+              ['['] = { output = { left = '[ ', right = ' ]' } },
+              ['{'] = { output = { left = '{ ', right = ' }' } },
+              ['<'] = { output = { left = '< ', right = ' >' } },
+          },
+          mappings = {
+              add = 'ys',
+              delete = 'ds',
+              find = '<leader>sf',
+              find_left = '<leader>sF',
+              highlight = '<leader>sh',
+              replace = 'cs',
+              suffix_last = 'N',
+              suffix_next = 'n',
+          },
+          update_n_lines = '',
+      })
+      vim.keymap.del('x', 'ys')
+      vim.keymap.set('x', 'S', function() require'mini.surround'.add("visual") end)
+      vim.keymap.set('n', 'yss', 'ys_', {remap=true})
     end,
   }
   use { "feline-nvim/feline.nvim", requires = {
@@ -135,7 +162,7 @@ require("packer").startup(function(use)
   use {
     "simrat39/symbols-outline.nvim",
     config = function()
-      require'symbols-outline'.setup()
+      require 'symbols-outline'.setup()
     end,
   }
   -- LSP Loading progress
@@ -152,7 +179,7 @@ require("packer").startup(function(use)
   use {
     "nvim-telescope/telescope.nvim",
     config = function()
-      require("telescope").setup(require'private.plugcfg.telescope') 
+      require("telescope").setup(require 'private.plugcfg.telescope')
     end,
   }
   use {
@@ -179,17 +206,17 @@ require("packer").startup(function(use)
       require("onedark").load()
     end,
   }
-  if require'private'.executable("silicon") then
+  if require 'private'.executable("silicon") then
     -- transforms code into images.
-    use { "NarutoXY/silicon.lua", config=function ()
-      require'silicon'.setup(require'private.plugcfg.silicon')
-    end}
+    use { "NarutoXY/silicon.lua", config = function()
+      require 'silicon'.setup(require 'private.plugcfg.silicon')
+    end }
   end
   -- use "Pocco81/DAPInstall.nvim"
   use "mfussenegger/nvim-dap"
-  use { "rcarriga/nvim-dap-ui", config = function ()
-    require'dapui'.setup()
-  end}
+  use { "rcarriga/nvim-dap-ui", config = function()
+    require 'dapui'.setup()
+  end }
   use "direnv/direnv.vim"
   use { "christoomey/vim-tmux-navigator" }
   use {

@@ -1,3 +1,10 @@
+--- @class Priv
+--- @field bootstrap Privbootstrap
+--- @field keybindutils Privkeybindutils
+--- @field logbuf Privlogbuf
+--- @field splits Privsplits
+--- @field term Privterm
+--- @field lspcfg Privlspcfg 
 local M = {}
 
 --- Returns true if an executable named `bin` exists on the system
@@ -7,13 +14,14 @@ function M.executable(bin)
   return vim.fn.executable(bin) == 1
 end
 
+local extend = vim.tbl_deep_extend
 --- Merges two map tables and their list parts in order.
 --- The first argument decides what to do if the same
 --- key is found in multiple tables.
 --- @param behaviour 'error'|'keep'|'force'
 --- @vararg table
 function M.tbl_join(behaviour, ...)
-    local merged = vim.tbl_extend(behaviour, ...)
+    local merged = extend(behaviour, ...)
     local args = {...}
     local size = select('#', ...)
     for i = 1, size do
@@ -102,8 +110,18 @@ function M.randomboolean(chance)
   return math.random() <= chance
 end
 
+local f = io.output()
 function M.debug(...)
-  print(vim.inspect(...))
+  local args = {...}
+  local len = select('#', ...)
+  for i=1,len do
+    if i >= 2 then
+      f:write(i..': ')
+    end
+    local txt = vim.inspect(args[i])
+    f:write(txt..'\n')
+  end
+  --f:close()
   return ...
 end
 
@@ -122,5 +140,22 @@ end
 function M.t(s)
   return vim.api.nvim_replace_termcodes(s, true, true, true)
 end
-Priv = M
-return M
+
+function string.startswith(text, text2)
+  return string.sub(text, 1, #text2) == text2
+end
+
+function M.insertlazy(prefix, tbl)
+  return setmetatable(tbl, {
+    __index = function(self, key)
+      local mod, suc = pcall(require, prefix..'.'..key)
+      if suc then
+        return mod
+      else
+        return rawget(self, key)
+      end
+    end
+  })
+end
+
+return M.insertlazy('private', M)

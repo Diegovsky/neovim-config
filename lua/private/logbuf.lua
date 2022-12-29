@@ -1,3 +1,4 @@
+--- @class Privlogbuf
 local M = {}
 
 local bufname = 'LOGBUF'

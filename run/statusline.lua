@@ -220,7 +220,6 @@ local comps = {
       provider = function()
         local name = require("private.lspcfg.profiles").get_current_profile_name()
         if name then
-          name = string.gsub(name, "sumneko", '')
           return ("[%s]"):format(name)
         else
           return ""

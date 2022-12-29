@@ -14,7 +14,15 @@ kutils.declmaps('n', {
   ['<C-s>'] = 'write';
   ['<C-a>'] = 'norm gg"+yG`a';
   ['<leader>hrr'] = 'luafile '..NVIM_INIT_FILE;
-  ['<leader>hhr'] = function() package.loaded = {}; dofile(NVIM_INIT_FILE) end;
+  ['<leader>hhr'] = function()
+    local prefix = 'private.'
+    for pkg, _ in pairs(package.loaded) do
+      if string.sub(pkg, 1, #prefix) == prefix then
+        package.loaded[pkg] = nil
+      end
+    end
+    dofile(NVIM_INIT_FILE)
+  end;
   ['<leader>hpi'] = 'PackerInstall';
   ['<leader>hpu'] = 'PackerUpdate';
   ['<C-space>']   = 'Telescope buffers';

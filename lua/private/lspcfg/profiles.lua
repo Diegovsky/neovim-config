@@ -39,6 +39,7 @@ end
 
 M.active_profiles = {}
 
+-- Use this to 'install' a profile
 M.activate_profile = function(name)
   local profile = M.profiles[name]
 
@@ -112,7 +113,7 @@ create_profile('sumneko_nvim', 'sumneko_lua', function()
         },
         diagnostics = {
           -- Get the language server to recognize the `vim` global
-          globals = {'vim', "DEBUG"},
+          globals = {'vim', "DEBUG", "Priv"},
         },
         workspace = {
           -- Make the server aware of Neovim runtime files

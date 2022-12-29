@@ -1,6 +1,8 @@
+--- @class Privterm
 local M = {};
 
 local terminals = {
+  'footclient',
   'alacritty',
   'kgx',
   'gnome-terminal',

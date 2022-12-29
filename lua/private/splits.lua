@@ -1,3 +1,4 @@
+--- @class Privsplits
 local M = setmetatable({}, {
   __index = function(self, key)
     if key == 'state' then

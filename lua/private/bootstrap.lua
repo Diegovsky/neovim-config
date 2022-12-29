@@ -1,3 +1,4 @@
+--- @class Privbootstrap
 local M = {
     is_bootstrapped = false,
 }

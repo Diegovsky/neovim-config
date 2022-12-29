@@ -2,12 +2,20 @@ local M = {}
 
 local cmp = require'cmp'
 local snippy = require'snippy'
+local dbg = require'private'.debug
+
+local has_words_before = function()
+  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+  return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
+end
 
 local function tab(fallback)
   if cmp.visible() then
     cmp.select_next_item()
   elseif snippy.can_expand_or_advance() then
     snippy.expand_or_advance()
+  elseif has_words_before() then
+      cmp.complete()
   else
     fallback()
   end
@@ -18,6 +26,8 @@ local function stab(fallback)
     cmp.select_prev_item()
   elseif snippy.can_jump(-1) then
     snippy.previous()
+  elseif has_words_before() then
+      cmp.complete()
   else
     fallback()
   end
@@ -28,8 +38,34 @@ M.cmp_init = function(force)
   if not force and not require("private").run_once "CMP_INIT" then
     return false
   end
+  vim.o.completeopt = 'menu,menuone,noselect'
+  require'private.lspcfg.highlight'
   local compare = require "cmp.config.compare"
   cmp.setup {
+    completion = {
+      keyword_length=2,
+      autocomplete=false
+    },
+    view = {
+      entries = { name='custom', selection_order='near_cursor' }
+    },
+    window = {
+      completion = {
+        winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,Search:None",
+        col_offset = -3,
+        side_padding = 0,
+      },
+    },
+    formatting = {
+      fields = { "kind", "abbr", "menu" },
+      format = function(entry, vim_item)
+        local kind = require("lspkind").cmp_format({ mode = "symbol_text", maxwidth = 50 })(entry, vim_item)
+        local strings = vim.split(kind.kind, "%s", { trimempty = true })
+        kind.kind = " " .. strings[1] .. " "
+        kind.menu = "    (" .. strings[2] .. ")"
+        return kind
+      end,
+    },
     snippet = {
       expand = function(args)
         require("snippy").expand_snippet(args.body)
@@ -38,27 +74,28 @@ M.cmp_init = function(force)
     sorting = {
       priority_weight = 1.0,
       comparators = {
-        -- compare.score_offset, -- not good at allcompare.locality,
-        compare.recently_used,
+        -- compare.score_offset, -- not good at all
+        compare.locality,
         compare.exact,
+        compare.recently_used,
         compare.score, -- based on :  score = score + ((#sources - (source_index - 1)) * sorting.priority_weight)
+        compare.kind,
         compare.offset,
         compare.order,
         -- compare.scopes, -- what?
         -- compare.sort_text,
-        -- compare.kind,
         -- compare.length, -- useless
       },
     },
     mapping = {
       ["<C-d>"] = cmp.mapping.scroll_docs(-4),
-      ["<C-f>"] = cmp.mapping.scroll_docs(4),
+      ["<C-u>"] = cmp.mapping.scroll_docs(4),
       ["<C-Space>"] = cmp.mapping.complete(),
       ["<C-e>"] = cmp.mapping.abort(),
-      ["<CR>"] = cmp.mapping.confirm {
+      ["<CR>"] = cmp.mapping.confirm({
         select = true,
         -- behavior = cmp.ConfirmBehavior.Replace,
-      },
+      }, snippy.expand_or_advance),
       ["<Tab>"] = cmp.mapping(tab, { "i", "s" }),
       ["<S-tab>"] = cmp.mapping(stab, { "i", "s" }),
       ["<down>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
@@ -69,9 +106,6 @@ M.cmp_init = function(force)
       { name = "nvim_lsp_signature_help" },
       { name = "snippy" },
     },
-    view = {
-      entries = 'native'
-    }
   }
 
   -- Prevemt cmp from messing with telescope
@@ -79,31 +113,6 @@ M.cmp_init = function(force)
     "autocmd FileType TelescopePrompt lua require('cmp').setup.buffer{enable=false}",
     true
   )
-end
-
-M.snippets_init = function()
-  local snippets = require "snippy"
-  local opts = {
-    expr = true,
-    remap = true,
-  }
-  local function jump_next()
-    return snippets.can_jump(1) and "<Plug>(snippy-next)" or "<Tab>"
-  end
-
-  local function jump_prev()
-    return snippets.can_jump(-1) and "<Plug>(snippy-previous)" or "<S-Tab>"
-  end
-
-  local function expand_or_advance()
-    return snippets.can_expand() and "<Plug>(snippy-expand)" or jump_next()
-  end
-
-  vim.keymap.set("i", "<Tab>", expand_or_advance, opts)
-  vim.keymap.set("s", "<Tab>", jump_next, opts)
-  vim.keymap.set({ "i", "s" }, "<S-Tab>", jump_prev, opts)
-  vim.keymap.set("x", "<Tab>", "<Plug>(snippy-cut-text)", opts)
-  vim.keymap.set("n", "g<Tab>", "<Plug>(snippy-cut-text)", opts)
 end
 
 return M

@@ -1,11 +1,6 @@
 local lspconfig = require "lspconfig"
+--- @class Pluglspcfg
 local M = {}
-vim.o.completeopt = "menuone,noselect"
-
--- [[
--- !TODO: Make an OOP API
--- !TODO: find a better place to put cmp init
--- ]]
 
 M.servers = {
   "clangd",
@@ -56,7 +51,7 @@ M.on_attach = function(_client, bufnr)
     ["gd"] = vim.lsp.buf.definition,
     ["gi"] = vim.lsp.buf.implementation,
     ["gr"] = vim.lsp.buf.references,
-    ["<leader>gt"] = vim.lsp.buf.type_definition,
+    ["gt"] = vim.lsp.buf.type_definition,
     ["K"] = vim.lsp.buf.hover,
     ["<C-k>"] = vim.lsp.buf.signature_help,
     ["<leader>pl"] = function()
@@ -74,7 +69,6 @@ M.on_attach = function(_client, bufnr)
 end
 
 M.capabilities = require("cmp_nvim_lsp").default_capabilities()
--- M.capabilities = require'coq'.lsp_ensure_capabilities(M.capabilities)
 M.capabilities.textDocument.completion.completionItem.snippetSupport = true
 M.capabilities.textDocument.completion.completionItem.resolveSupport = {
   properties = {
@@ -84,19 +78,14 @@ M.capabilities.textDocument.completion.completionItem.resolveSupport = {
   },
 }
 
-M.quirks = {
-}
+M.quirks = { }
 
 M.init = function(force)
   if not force and not require("private").run_once "LSP_INIT" then
     return
   end
   for _, lsp in ipairs(M.servers) do
-    if lsp == nil then
-      print(_, "nil")
-    else
-      M.setup_server(lsp)
-    end
+    M.setup_server(lsp)
   end
 end
 
@@ -104,5 +93,4 @@ M.reload = function()
   package.loaded["private.lspcfg"] = nil
   require("private.lspcfg").init(true)
 end
-Lspcfg = M
-return M
+return Priv.insertlazy('private.lspcfg', M)
