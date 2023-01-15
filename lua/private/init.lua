@@ -14,6 +14,26 @@ function M.executable(bin)
   return vim.fn.executable(bin) == 1
 end
 
+function M.wipeHiddenBuffers()
+    local buflist = vim.fn.getbufinfo({buflisted = 1})
+    local count = 0
+    local lastbuf
+    for _, buf in pairs(buflist) do
+      if #buf.windows == 0 and buf.changed == 0 then
+        count = count + 1
+        lastbuf = buf.name
+        pcall(vim.api.nvim_buf_delete, buf.bufnr, {force=false})
+      end
+    end
+    if count > 1 then
+      print("Wiped "..count.." buffers")
+    elseif count == 1 then
+      print('Wiped '..lastbuf)
+    else
+      print('No buffers wiped')
+    end
+end
+
 local extend = vim.tbl_deep_extend
 --- Merges two map tables and their list parts in order.
 --- The first argument decides what to do if the same

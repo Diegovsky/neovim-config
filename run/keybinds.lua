@@ -4,13 +4,16 @@ local splits = require'private.splits'
 
 require'private.term'.register_keybinds()
 
+-- Easily create a file in the current file's dir
+keymap('n', '<M-x>', ':edit '..vim.fn.expand("%:p:h")..'/')
+
 kutils.declmaps('n', {
   ['<leader>ol'] = require'private.logbuf'.toggle;
   ['<leader>os'] = 'SymbolsOutline';
   ['<M-i>'] =  function() splits.state = false end;
   ['<M-o>'] =  function() splits.state = true end;
   ['<M-n>'] = splits.split;
-  ['<M-x>'] = function () require'telescope.builtin'.find_files{cwd=vim.fn.expand'%:h'} end,
+  ['<leader>x'] = function () require'telescope.builtin'.find_files{cwd=vim.fn.expand'%:h'} end,
   ['<C-s>'] = 'write';
   ['<C-a>'] = 'norm gg"+yG`a';
   ['<leader>hrr'] = 'luafile '..NVIM_INIT_FILE;
@@ -43,24 +46,8 @@ kutils.declmaps('n', {
   ['<M-k>'] = 'TmuxNavigateUp';
   ['<M-l>'] = 'TmuxNavigateRight';
   ['<leader>oo'] = 'CHADopen';
+  -- Wipe buffers
   ['<leader>bw'] = function()
-    local buflist = vim.fn.getbufinfo({buflisted = 1})
-    local c = 0
-    local lastbuf
-    for _, buf in pairs(buflist) do
-      if #buf.windows == 0 and buf.changed == 0 then
-        c = c + 1
-        lastbuf = buf.name
-        vim.api.nvim_buf_delete(buf.bufnr, {force=false})
-      end
-    end
-    if c > 1 then
-      print("Wiped "..c.." buffers")
-    elseif c == 1 then
-      print('Wiped '..lastbuf)
-    else
-      print('No buffers wiped')
-    end
   end;
 })
 
@@ -90,8 +77,8 @@ do
     keymap('n', key, function() scroll(key, offset) end, {silent = true, expr=true})
   end
 
-  mapscroll('j', -4)
-  mapscroll('k', 4)
+  mapscroll('u', 4)
+  mapscroll('d', -4)
 end
 
 kutils.declmaps('n',
@@ -122,10 +109,10 @@ kutils.declmaps(
 -- Omnifunc mappings
 if require'private'.run_once('omnifunc-bindings') then
   local opt = {expr=true, silent=true}
-  local keymap = function(key, expr) keymap("i", key, kutils.not_lsp(expr, key), opt) end
-  keymap("<C-Space>", "<C-x><C-o>")
-  keymap("<Tab>", "<C-N>")
-  keymap("<S-Tab>", "<C-P>")
+  local lspfallback = function(key, expr) keymap("i", key, kutils.not_lsp(expr, key), opt) end
+  lspfallback("<C-Space>", "<C-x><C-o>")
+  lspfallback("<Tab>", "<C-N>")
+  lspfallback("<S-Tab>", "<C-P>")
 end
 
 -- Add copy and pasting like common GUIs.
@@ -135,13 +122,6 @@ kutils.declmaps({'n', 'v'}, {
   P = 'P';
   p = 'p';
 }, kutils.prefix('"+'), kutils.fmt("<M-%s>"))
-
-kutils.declmaps('i', {
-  v = '"+p';
-  V = '"+P';
-  p = 'p';
-  P = 'P';
-}, kutils.fmt('<cmd>norm h%sll<cr>'), kutils.fmt("<C-%s>"))
 
 -- allow to quit terminal mode using ESC
 keymap('t', '<esc>', '<C-\\><C-n>')

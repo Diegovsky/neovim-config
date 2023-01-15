@@ -28,31 +28,38 @@ require("packer").startup(function(use)
   -- Cool prompts for vim.ui
   use { "stevearc/dressing.nvim" }
   -- Cool notifications
-  use { "rcarriga/nvim-notify", config = function()
-    vim.notify = function(msg, level)
+  use { "rcarriga/nvim-notify", config = function() require('notify').setup({
+    fps=60,
+    minimum_width=30,
+    timeout=1000,
+    max_width=70,
+  }) end
+    --[[ vim.notify = function(msg, level)
       if level == vim.log.levels.ERROR or level == vim.log.levels.WARN then
         require 'notify' (msg, level)
       else
         print(msg)
       end
-    end
-  end }
+    end ]]
+   }
+  use { 'folke/noice.nvim', requires = {
+    "MunifTanjim/nui.nvim",
+  }, config = function() require('noice').setup(require'private.plugcfg.noice') end}
   -- Git plugin
   use {
     "TimUntersberger/neogit",
-    config = function()
-      require("neogit").setup {}
-    end,
+    requires = "nvim-lua/plenary.nvim",
+    config = require("neogit").setup({})
   }
 
   -- Another git plugin
   use {
     "akinsho/git-conflict.nvim",
-    config = function()
-      require("git-conflict").setup()
-    end,
+    config = require("git-conflict").setup()
   }
 
+  -- Lsp extensions for flutter
+  use { "akinsho/flutter-tools.nvim" }
   -- Lsp extensions for rust
   use { "simrat39/rust-tools.nvim" }
   -- Lsp extensions for java
@@ -75,14 +82,11 @@ require("packer").startup(function(use)
   use { "ms-jpq/chadtree", branch = "chad", run = "<cmd>CHADdeps" }
   use {
     "kyazdani42/nvim-web-devicons",
-    config = function()
-      -- Icon theme
-      require("nvim-web-devicons").setup {
-        override = {},
-        default = true,
-      }
-    end,
-  }
+    -- Icon theme
+    config = function() require("nvim-web-devicons").setup{
+      override = {},
+      default = true,
+    } end}
   use {
     "hrsh7th/nvim-cmp",
     requires = {
@@ -97,15 +101,13 @@ require("packer").startup(function(use)
     "nvim-treesitter/nvim-treesitter",
     run = "<cmd>TSUpdate",
     requires = { "nvim-treesitter/nvim-treesitter-textobjects" },
-    config = function()
-      require("nvim-treesitter.configs").setup(require 'private.plugcfg.treesitter')
-    end,
+    config = require("nvim-treesitter.configs").setup(require 'private.plugcfg.treesitter')
   }
 
   use {
+    -- Comment plugin settings
     "b3nj5m1n/kommentary",
     config = function()
-      -- Comment plugin settings
       require("kommentary.config").use_default_mappings()
     end,
   }
@@ -122,48 +124,16 @@ require("packer").startup(function(use)
   } ]]
   use {
     "echasnovski/mini.nvim",
-    config = function()
-      require("mini.pairs").setup({
-        mappings = {
-          ["'"] = { action = 'closeopen', pair = "''", neigh_pattern = '[^<\\&][^>]', register = { cr = false } },
-
-          ["<"] = { action = 'open', pair = "<>", neigh_pattern = '[%a].', register = { cr = false } },
-          [">"] = { action = 'close', pair = "<>", neigh_pattern = '[%a].', register = { cr = false } },
-        }
-      })
-      require 'mini.surround'.setup({
-          custom_surroundings = {
-              ['('] = { output = { left = '( ', right = ' )' } },
-              ['['] = { output = { left = '[ ', right = ' ]' } },
-              ['{'] = { output = { left = '{ ', right = ' }' } },
-              ['<'] = { output = { left = '< ', right = ' >' } },
-          },
-          mappings = {
-              add = 'ys',
-              delete = 'ds',
-              find = '<leader>sf',
-              find_left = '<leader>sF',
-              highlight = '<leader>sh',
-              replace = 'cs',
-              suffix_last = 'N',
-              suffix_next = 'n',
-          },
-          update_n_lines = '',
-      })
-      vim.keymap.del('x', 'ys')
-      vim.keymap.set('x', 'S', function() require'mini.surround'.add("visual") end)
-      vim.keymap.set('n', 'yss', 'ys_', {remap=true})
-    end,
+    config = require'private.plugcfg.mini',
   }
+  use { "folke/neodev.nvim", requires={ "neovim/nvim-lspconfig"}}
   use { "feline-nvim/feline.nvim", requires = {
     "lewis6991/gitsigns.nvim",
   } }
   -- Lsp outlines
   use {
     "simrat39/symbols-outline.nvim",
-    config = function()
-      require 'symbols-outline'.setup()
-    end,
+    config = require('symbols-outline').setup()
   }
   -- LSP Loading progress
   --[[ use {
@@ -178,9 +148,7 @@ require("packer").startup(function(use)
   -- Telescope and Plugin
   use {
     "nvim-telescope/telescope.nvim",
-    config = function()
-      require("telescope").setup(require 'private.plugcfg.telescope')
-    end,
+    config = require("telescope").setup(require 'private.plugcfg.telescope')
   }
   use {
     "jvgrootveld/telescope-zoxide",
@@ -212,7 +180,6 @@ require("packer").startup(function(use)
       require 'silicon'.setup(require 'private.plugcfg.silicon')
     end }
   end
-  -- use "Pocco81/DAPInstall.nvim"
   use "mfussenegger/nvim-dap"
   use { "rcarriga/nvim-dap-ui", config = function()
     require 'dapui'.setup()
@@ -268,4 +235,5 @@ scandir.scan_dir(tostring(luapath), {
   end,
 })
 
+require'neodev'.setup()
 require("private.lspcfg").init()

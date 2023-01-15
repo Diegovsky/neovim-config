@@ -34,6 +34,7 @@ vim.o.encoding="utf-8"
 vim.o.foldmethod="indent"
 vim.o.foldenable=false
 vim.o.foldlevelstart=99
+vim.opt.iskeyword:remove { "_" }
 
 -- global options
 vim.g['vimsyn_embed'] = 'l'

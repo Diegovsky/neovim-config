@@ -2,52 +2,48 @@ local M = {}
 
 local cmp = require'cmp'
 local snippy = require'snippy'
-local dbg = require'private'.debug
 
 local has_words_before = function()
   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
   return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 end
 
-local function tab(fallback)
-  if cmp.visible() then
-    cmp.select_next_item()
-  elseif snippy.can_expand_or_advance() then
-    snippy.expand_or_advance()
-  elseif has_words_before() then
-      cmp.complete()
-  else
-    fallback()
+local function lspmove(cmpmove, snipcanmove, snipmove)
+  return function(fallback)
+    if cmp.visible() then
+      cmpmove()
+    elseif snipcanmove() then
+        snipmove()
+    elseif has_words_before() then
+        cmp.complete()
+    else
+      fallback()
+    end
   end
 end
 
-local function stab(fallback)
-  if cmp.visible() then
-    cmp.select_prev_item()
-  elseif snippy.can_jump(-1) then
-    snippy.previous()
-  elseif has_words_before() then
-      cmp.complete()
-  else
-    fallback()
-  end
-end
+local tab = lspmove(cmp.select_next_item,
+                    snippy.can_expand_or_advance,
+                    snippy.expand_or_advance)
+
+local stab = lspmove(cmp.select_prev_item,
+                     function() snippy.can_jump(-1) end,
+                     snippy.previous)
 
 M.cmp_init = function(force)
   force = force or false
   if not force and not require("private").run_once "CMP_INIT" then
     return false
   end
-  vim.o.completeopt = 'menu,menuone,noselect'
-  require'private.lspcfg.highlight'
+  vim.o.completeopt = 'menu,preview,menuone,noselect'
   local compare = require "cmp.config.compare"
+---@diagnostic disable-next-line: redundant-parameter
   cmp.setup {
-    completion = {
-      keyword_length=2,
-      autocomplete=false
-    },
     view = {
       entries = { name='custom', selection_order='near_cursor' }
+    },
+    completion = {
+      keyword_length=2,
     },
     window = {
       completion = {
@@ -61,8 +57,8 @@ M.cmp_init = function(force)
       format = function(entry, vim_item)
         local kind = require("lspkind").cmp_format({ mode = "symbol_text", maxwidth = 50 })(entry, vim_item)
         local strings = vim.split(kind.kind, "%s", { trimempty = true })
-        kind.kind = " " .. strings[1] .. " "
-        kind.menu = "    (" .. strings[2] .. ")"
+        kind.kind = " " .. tostring(strings[1]) .. " "
+        kind.menu = "    (" .. tostring(strings[2]) .. ")"
         return kind
       end,
     },
@@ -88,8 +84,8 @@ M.cmp_init = function(force)
       },
     },
     mapping = {
-      ["<C-d>"] = cmp.mapping.scroll_docs(-4),
-      ["<C-u>"] = cmp.mapping.scroll_docs(4),
+      ["<C-d>"] = cmp.mapping.scroll_docs(4),
+      ["<C-u>"] = cmp.mapping.scroll_docs(-4),
       ["<C-Space>"] = cmp.mapping.complete(),
       ["<C-e>"] = cmp.mapping.abort(),
       ["<CR>"] = cmp.mapping.confirm({

@@ -16,6 +16,7 @@ M.servers = {
   "sumneko_lua",
   "teal_ls",
   "vala_ls",
+  "tsserver",
   "zls",
 }
 
@@ -35,7 +36,14 @@ function M.setup_server(name, opt)
     require("rust-tools").setup { server = args }
   elseif name == 'jdtls' then
     require'jdtls'.start_or_attach(args)
+  elseif name == 'dartls' then
+    require'flutter-tools'.setup({
+      lsp = args
+    })
   else
+    if name == 'sumneko_lua' then
+      print(name)
+    end
     lspconfig[name].setup(args)
   end
 end
@@ -51,7 +59,7 @@ M.on_attach = function(_client, bufnr)
     ["gd"] = vim.lsp.buf.definition,
     ["gi"] = vim.lsp.buf.implementation,
     ["gr"] = vim.lsp.buf.references,
-    ["gt"] = vim.lsp.buf.type_definition,
+    ["gT"] = vim.lsp.buf.type_definition,
     ["K"] = vim.lsp.buf.hover,
     ["<C-k>"] = vim.lsp.buf.signature_help,
     ["<leader>pl"] = function()
@@ -93,4 +101,5 @@ M.reload = function()
   package.loaded["private.lspcfg"] = nil
   require("private.lspcfg").init(true)
 end
+
 return Priv.insertlazy('private.lspcfg', M)

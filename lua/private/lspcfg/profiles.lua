@@ -19,9 +19,6 @@ M.default_profiles = {
   },
   sumneko_lua = {
     cmd = { "/usr/bin/lua-language-server" },
-    Lua = {
-      runtime = { version = "Lua54" },
-    },
   },
 }
 
