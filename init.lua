@@ -28,23 +28,12 @@ require("packer").startup(function(use)
   -- Cool prompts for vim.ui
   use { "stevearc/dressing.nvim" }
   -- Cool notifications
-  use { "rcarriga/nvim-notify", config = function() require('notify').setup({
-    fps=60,
-    minimum_width=30,
-    timeout=1000,
-    max_width=70,
-  }) end
-    --[[ vim.notify = function(msg, level)
-      if level == vim.log.levels.ERROR or level == vim.log.levels.WARN then
-        require 'notify' (msg, level)
-      else
-        print(msg)
-      end
-    end ]]
-   }
-  use { 'folke/noice.nvim', requires = {
+  use { "rcarriga/nvim-notify" }
+  use 'MunifTanjim/nui.nvim'
+
+  --[[ use { 'folke/noice.nvim', requires = {
     "MunifTanjim/nui.nvim",
-  }, config = function() require('noice').setup(require'private.plugcfg.noice') end}
+  }, config = function() require('noice').setup(require'private.plugcfg.noice') end} ]]
   -- Git plugin
   use {
     "TimUntersberger/neogit",

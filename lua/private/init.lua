@@ -168,7 +168,7 @@ end
 function M.insertlazy(prefix, tbl)
   return setmetatable(tbl, {
     __index = function(self, key)
-      local mod, suc = pcall(require, prefix..'.'..key)
+      local suc, mod = pcall(require, prefix..'.'..key)
       if suc then
         return mod
       else

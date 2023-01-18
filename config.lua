@@ -9,7 +9,7 @@ if Priv.executable('nvr') then
 end
 
 -- Let's hope we can enable this without vimscript sometime
-vim.cmd'filetype on'
+vim.cmd'filetype indent on'
 vim.g.mapleader = " "
 vim.o.showmode = false
 vim.o.laststatus = 3
@@ -34,7 +34,6 @@ vim.o.encoding="utf-8"
 vim.o.foldmethod="indent"
 vim.o.foldenable=false
 vim.o.foldlevelstart=99
-vim.opt.iskeyword:remove { "_" }
 
 -- global options
 vim.g['vimsyn_embed'] = 'l'

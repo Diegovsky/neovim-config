@@ -41,9 +41,6 @@ function M.setup_server(name, opt)
       lsp = args
     })
   else
-    if name == 'sumneko_lua' then
-      print(name)
-    end
     lspconfig[name].setup(args)
   end
 end

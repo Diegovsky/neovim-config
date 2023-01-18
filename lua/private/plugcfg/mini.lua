@@ -21,6 +21,7 @@ return function()
               find_left = '<leader>sF',
               highlight = '<leader>sh',
               replace = 'cs',
+              update_n_lines = '',
               suffix_last = 'N',
               suffix_next = 'n',
           },

@@ -5,7 +5,9 @@ local splits = require'private.splits'
 require'private.term'.register_keybinds()
 
 -- Easily create a file in the current file's dir
-keymap('n', '<M-x>', ':edit '..vim.fn.expand("%:p:h")..'/')
+keymap('n', '<M-x>', function ()
+  return ':edit '..vim.fn.expand("%:h")..'/'
+end, {expr=true})
 
 kutils.declmaps('n', {
   ['<leader>ol'] = require'private.logbuf'.toggle;
@@ -138,4 +140,17 @@ kutils.declremaps('n', {
   ['<'] = '<<',
   ['>'] = '>>',
 })
+
+-- Add underscore aware word movements
+undmove = function (key)
+  local oldopt = vim.o.iskeyword
+  vim.opt.iskeyword:remove{ "_" }
+  vim.cmd('norm '..key)
+  vim.o.iskeyword = oldopt
+end
+
+kutils.declmaps({'n', 'v', 'o'}, {
+  w = 'w',
+  b = 'b',
+}, kutils.runfunc(undmove), kutils.prefix("<leader>"))
 
