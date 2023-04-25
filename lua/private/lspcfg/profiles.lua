@@ -17,14 +17,14 @@ M.default_profiles = {
       "--protocol=lsp",
     },
   },
-  sumneko_lua = {
+  lua_ls = {
     cmd = { "/usr/bin/lua-language-server" },
   },
 }
 
 M.get_current_profile_name = function()
   -- Get attached clients to current buffer
-  local clients = vim.lsp.buf_get_clients(0)
+  local clients = vim.lsp.get_active_clients({bufnr=0})
   for _, client in ipairs(clients) do
     -- Returns the first profile name found for any client
     local profile = M.active_profiles[client.name]
@@ -93,7 +93,7 @@ end
 
 --- Profiles
 
-create_profile('sumneko_nvim', 'sumneko_lua', function()
+create_profile('sumneko_nvim', 'lua_ls', function()
   local runtime_path = vim.split(package.path, ';')
   table.insert(runtime_path, "lua/?.lua")
   table.insert(runtime_path, "lua/?/init.lua")

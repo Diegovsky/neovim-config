@@ -34,7 +34,7 @@ function M.noop(value)
   return value
 end
 
---- @alias DeclarativeMapping string|fun(string?):(string|fun())
+--- @alias DeclarativeMapping string|fun(string?):string?
 
 --- @param mode string|string[]
 --- @param t table<string, DeclarativeMapping>

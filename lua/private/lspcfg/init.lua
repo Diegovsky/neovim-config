@@ -13,10 +13,11 @@ M.servers = {
   "pyright",
   "rust_analyzer",
   "solargraph", -- ruby lsp
-  "sumneko_lua",
+  "lua_ls",
   "teal_ls",
   "vala_ls",
   "tsserver",
+  "r_language_server",
   "zls",
 }
 
@@ -49,14 +50,16 @@ end
 ---@diagnostic disable-next-line: unused-local
 M.on_attach = function(_client, bufnr)
   local opts = { noremap = true, silent = true, buffer = bufnr }
-  require'private.lspcfg.cmp'.cmp_init(true)
+  require'private.lspcfg.cmp'.cmp_init()
+
+  dofile(NVIM_CONFIG_FOLDER..'/run/highlight.lua')
 
   require("private.keybindutils").declmaps("n", {
     ["gD"] = vim.lsp.buf.declaration,
     ["gd"] = vim.lsp.buf.definition,
     ["gi"] = vim.lsp.buf.implementation,
     ["gr"] = vim.lsp.buf.references,
-    ["gT"] = vim.lsp.buf.type_definition,
+    ["go"] = vim.lsp.buf.type_definition,
     ["K"] = vim.lsp.buf.hover,
     ["<C-k>"] = vim.lsp.buf.signature_help,
     ["<leader>pl"] = function()
@@ -74,6 +77,10 @@ M.on_attach = function(_client, bufnr)
 end
 
 M.capabilities = require("cmp_nvim_lsp").default_capabilities()
+M.capabilities.textDocument.foldingRange = {
+    dynamicRegistration = false,
+    lineFoldingOnly = true
+}
 M.capabilities.textDocument.completion.completionItem.snippetSupport = true
 M.capabilities.textDocument.completion.completionItem.resolveSupport = {
   properties = {

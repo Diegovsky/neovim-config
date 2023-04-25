@@ -35,15 +35,18 @@ M.cmp_init = function(force)
   if not force and not require("private").run_once "CMP_INIT" then
     return false
   end
+
+  dofile(NVIM_CONFIG_FOLDER..'/run/highlight.lua')
+
   vim.o.completeopt = 'menu,preview,menuone,noselect'
   local compare = require "cmp.config.compare"
 ---@diagnostic disable-next-line: redundant-parameter
   cmp.setup {
     view = {
-      entries = { name='custom', selection_order='near_cursor' }
+      entries = { name='custom' }
     },
     completion = {
-      keyword_length=2,
+      keyword_length=1,
     },
     window = {
       completion = {
@@ -70,14 +73,14 @@ M.cmp_init = function(force)
     sorting = {
       priority_weight = 1.0,
       comparators = {
-        -- compare.score_offset, -- not good at all
-        compare.locality,
-        compare.exact,
-        compare.recently_used,
         compare.score, -- based on :  score = score + ((#sources - (source_index - 1)) * sorting.priority_weight)
+        compare.recently_used,
+        compare.exact,
         compare.kind,
-        compare.offset,
-        compare.order,
+        -- compare.score_offset, -- not good at all
+        -- compare.offset,
+        -- compare.locality, -- suspected of changing cursor location
+        -- compare.order,
         -- compare.scopes, -- what?
         -- compare.sort_text,
         -- compare.length, -- useless
@@ -90,8 +93,8 @@ M.cmp_init = function(force)
       ["<C-e>"] = cmp.mapping.abort(),
       ["<CR>"] = cmp.mapping.confirm({
         select = true,
-        -- behavior = cmp.ConfirmBehavior.Replace,
-      }, snippy.expand_or_advance),
+        behavior = cmp.ConfirmBehavior.Replace,
+      }),
       ["<Tab>"] = cmp.mapping(tab, { "i", "s" }),
       ["<S-tab>"] = cmp.mapping(stab, { "i", "s" }),
       ["<down>"] = cmp.mapping(cmp.mapping.select_next_item(), { "i", "s" }),
@@ -101,6 +104,7 @@ M.cmp_init = function(force)
       { name = "nvim_lsp" },
       { name = "nvim_lsp_signature_help" },
       { name = "snippy" },
+      { name = "copilot" }
     },
   }
 

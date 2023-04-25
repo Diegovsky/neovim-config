@@ -1,4 +1,5 @@
 return {
+  ensure_installed = { "c", "lua", "vim", "query", "markdown", "markdown_inline", "cpp", "rust", "python", "json" },
   highlight = {
     enable = true,
   },
@@ -7,7 +8,7 @@ return {
   },
   indent = {
     enable = true,
-    disable = { "python", "rust" },
+    -- disable = { "python", "rust" },
   },
   yati = { enable = true },
   autopairs = { enable = true },

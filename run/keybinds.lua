@@ -17,7 +17,7 @@ kutils.declmaps('n', {
   ['<M-n>'] = splits.split;
   ['<leader>x'] = function () require'telescope.builtin'.find_files{cwd=vim.fn.expand'%:h'} end,
   ['<C-s>'] = 'write';
-  ['<C-a>'] = 'norm gg"+yG`a';
+  ['<C-a>'] = 'norm gg"+yG``';
   ['<leader>hrr'] = 'luafile '..NVIM_INIT_FILE;
   ['<leader>hhr'] = function()
     local prefix = 'private.'
@@ -33,7 +33,9 @@ kutils.declmaps('n', {
   ['<C-space>']   = 'Telescope buffers';
   ['<leader>cd']  = 'Telescope zoxide list';
   ['<leader>of']  = 'Telescope oldfiles';
+  ['<leader>rg'] = 'Telescope live_grep';
   ['<leader>fg'] = 'Telescope live_grep';
+  ['<leader>fs'] = 'Telescope lsp_dynamic_workspace_symbols';
   ['<leader>tn'] = 'tabnew';
   ['<leader>tc'] = 'tabclose';
   ['<leader><leader>'] = function ()
@@ -47,29 +49,22 @@ kutils.declmaps('n', {
   ['<M-j>'] = 'TmuxNavigateDown';
   ['<M-k>'] = 'TmuxNavigateUp';
   ['<M-l>'] = 'TmuxNavigateRight';
-  ['<leader>oo'] = 'CHADopen';
+  ['<leader>oo'] = 'NvimTreeToggle';
   -- Wipe buffers
-  ['<leader>bw'] = function()
-  end;
+  ['<leader>bw'] = require'private'.wipeHiddenBuffers,
 })
 
 -- Remap <C-w><key> to <M-<key>>
 do
-  -- Set maps to be used with windows
-  local function winCmd(key)
-      keymap('n', ('<M-%s>'):format(key), ('<cmd>wincmd %s<cr>'):format(key), {})
-  end
-
   local winkeys = 'wHJKLT|_=<>'
   for key in winkeys:gmatch('.') do
-    winCmd(key)
+    keymap('n', ('<M-%s>'):format(key), ('<cmd>wincmd %s<cr>'):format(key), {})
   end
 end
 
 do
-
   local function scroll(key, offset)
-   if not require("noice.lsp").scroll(offset) then
+    if not require("noice.lsp").scroll(offset) then
       return key
     end
   end
@@ -141,8 +136,13 @@ kutils.declremaps('n', {
   ['>'] = '>>',
 })
 
+-- Remap these chars so I can go to then more easily
+for char in string.gmatch('(){}[]', '.') do
+  keymap('n', char, 'f'..char, {})
+end
+
 -- Add underscore aware word movements
-undmove = function (key)
+local undmove = function (key)
   local oldopt = vim.o.iskeyword
   vim.opt.iskeyword:remove{ "_" }
   vim.cmd('norm '..key)
@@ -153,4 +153,3 @@ kutils.declmaps({'n', 'v', 'o'}, {
   w = 'w',
   b = 'b',
 }, kutils.runfunc(undmove), kutils.prefix("<leader>"))
-
