@@ -1,6 +1,5 @@
 local kutils = require'private.keybindutils'
 local keymap = vim.keymap.set
-local splits = require'private.splits'
 
 require'private.term'.register_keybinds()
 
@@ -10,14 +9,16 @@ keymap('n', '<M-x>', function ()
 end, {expr=true})
 
 kutils.declmaps('n', {
-  ['<leader>ol'] = require'private.logbuf'.toggle;
   ['<leader>os'] = 'SymbolsOutline';
-  ['<M-i>'] =  function() splits.state = false end;
-  ['<M-o>'] =  function() splits.state = true end;
-  ['<M-n>'] = splits.split;
+  ['<M-i>'] = 'vsplit';
+  ['<M-o>'] = 'split';
+  ['<M-n>'] = function ()
+    print('You removed that, remember?')
+  end,
   ['<leader>x'] = function () require'telescope.builtin'.find_files{cwd=vim.fn.expand'%:h'} end,
   ['<C-s>'] = 'write';
   ['<C-a>'] = 'norm gg"+yG``';
+  ['<leader>hrk'] = function() dofile(NVIM_CONFIG_FOLDER..'/run/keybinds.lua'); print('Keybinds reloaded') end;
   ['<leader>hrr'] = 'luafile '..NVIM_INIT_FILE;
   ['<leader>hhr'] = function()
     local prefix = 'private.'
@@ -25,6 +26,7 @@ kutils.declmaps('n', {
       if string.sub(pkg, 1, #prefix) == prefix then
         package.loaded[pkg] = nil
       end
+      package.loaded['private'] = nil
     end
     dofile(NVIM_INIT_FILE)
   end;
@@ -36,7 +38,7 @@ kutils.declmaps('n', {
   ['<leader>rg'] = 'Telescope live_grep';
   ['<leader>fg'] = 'Telescope live_grep';
   ['<leader>fs'] = 'Telescope lsp_dynamic_workspace_symbols';
-  ['<leader>tn'] = 'tabnew';
+  ['<leader>tn'] = 'tabedit %';
   ['<leader>tc'] = 'tabclose';
   ['<leader><leader>'] = function ()
     if vim.fn.getcwd() == vim.fn.getenv("HOME") then

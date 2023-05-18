@@ -1,10 +1,8 @@
---- @class Priv
---- @field bootstrap Privbootstrap
---- @field keybindutils Privkeybindutils
---- @field logbuf Privlogbuf
---- @field splits Privsplits
---- @field term Privterm
---- @field lspcfg Privlspcfg 
+--- @class Private
+--- @field bootstrap Privatebootstrap
+--- @field keybindutils Privatekeybindutils
+--- @field term Privateterm
+--- @field lspcfg Privatelspcfg
 local M = {}
 
 --- Returns true if an executable named `bin` exists on the system
@@ -19,7 +17,7 @@ function M.wipeHiddenBuffers()
     local count = 0
     local lastbuf
     for _, buf in pairs(buflist) do
-      if #buf.windows == 0 and buf.changed == 0 then
+      if #buf.windows == 0 and buf.changed == 0 and not string.find(buf.name, 'term://') then
         count = count + 1
         lastbuf = buf.name
         pcall(vim.api.nvim_buf_delete, buf.bufnr, {force=false})

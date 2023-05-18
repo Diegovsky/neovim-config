@@ -1,5 +1,5 @@
 local lspconfig = require "lspconfig"
---- @class Pluglspcfg
+--- @class Privlspcfg
 local M = {}
 
 M.servers = {

@@ -1,4 +1,4 @@
---- @class Privkeybindutils
+--- @class Privatekeybindutils
 local M = {}
 
 local utils = require'private'

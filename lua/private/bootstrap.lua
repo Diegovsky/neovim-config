@@ -1,4 +1,4 @@
---- @class Privbootstrap
+--- @class Privatebootstrap
 local M = {}
 
 function M.require_lazy()

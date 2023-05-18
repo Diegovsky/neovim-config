@@ -7,7 +7,7 @@ pcall(vim.cmd, "language en_GB.utf8")
 NVIM_CONFIG_FOLDER = NVIM_CONFIG_FOLDER or vim.fn.stdpath "config" .. "/"
 NVIM_INIT_FILE = NVIM_CONFIG_FOLDER .. "/init.lua"
 
---- @type Priv
+--- @type Private
 Priv = require'private'
 
 local boostrap = require 'private.bootstrap'

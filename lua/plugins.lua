@@ -20,6 +20,9 @@ return {
   "tpope/vim-sensible",
   -- "tpope/vim-surround",
 
+  -- hyprland config hl
+  {'theRealCarneiro/hyprland-vim-syntax', ft='hypr'},
+
   {'kevinhwang91/nvim-ufo', config=function() require'ufo'.setup{
     provider_selector = function(bufnr, filetype, buftype)
       return {'treesitter', 'indent'}
@@ -86,6 +89,13 @@ return {
     require'nvim-tree'.setup({
       on_attach=function (bufnr)
         local api = require'nvim-tree.api'
+
+        --- @param mode string
+        ---@param rhs string
+        local function delmap(mode, rhs)
+          pcall(vim.keymap.del, mode, rhs, {buffer=bufnr})
+        end
+
         -- Apply default nvim-tree mappings
         api.config.mappings.default_on_attach(bufnr)
         --- @param mode string
@@ -93,26 +103,14 @@ return {
         ---@param lhs (string|function)
         ---@param desc string
         local function keymap(mode, rhs, lhs, desc)
-          vim.keymap.set(mode, rhs, lhs, {buffer=bufnr, desc='nvim-tree: '..desc})
-        end
-        --- @param mode string
-        ---@param rhs string
-        local function delmap(mode, rhs)
-          vim.keymap.del(mode, rhs, {buffer=bufnr})
+          delmap(mode, rhs)
+          vim.keymap.set(mode, rhs, lhs, {buffer=bufnr, remap=true, desc='nvim-tree: '..desc})
         end
 
-        delmap('n', '<tab>')
-        vim.keymap.set('n', '<tab>', '<cr>', {remap=true, buffer=bufnr, desc='nvim-tree: Open'})
-        delmap('n', '-')
-        keymap('n', '-', function ()
-          vim.cmd'Dirbuf'
-          local reopen = function ()
-            vim.api.nvim_win_close(0, false)
-            vim.cmd'NvimTreeOpen'
-          end
-          vim.keymap.set('n', '-', reopen, {buffer=0})
-          vim.keymap.set('n', '<C-o>', reopen, {buffer=0})
-        end, 'Open Dirbuf')
+        keymap('n', '<tab>', '<cr>', 'Open')
+        keymap('n', '-', function() api.tree.change_root('..') end, 'Open Parent')
+        keymap('n', '?', function() api.tree.toggle_help() end, 'Toggle Help')
+        keymap('n', 'c', function() api.tree.change_root_to_node() end, 'Toggle Help')
       end
     })
   end },

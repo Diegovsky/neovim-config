@@ -1,4 +1,4 @@
---- @class Privterm
+--- @class Privateterm
 local M = {};
 
 local terminals = {
@@ -11,37 +11,33 @@ local terminals = {
   'x-terminal-emulator'
 }
 
-local termcache = nil
+M.termcache = nil
 
 function M.open_term(cmd)
-  local splits = require'private.splits'
-  splits.split()
   vim.cmd('terminal '..(cmd or ""))
 end
 
-function M.native_term(cmd, term)
-  term = term or termcache
-  if term then
-    if cmd then
-      cmd = ' '..cmd
-    else
-      cmd = ''
-    end
-    vim.cmd('silent! !'..term..cmd..' &')
-  else
-    for _, v in ipairs(terminals) do
-      if vim.fn.executable(v) then
-        termcache = v
-        return M.native_term(cmd, v)
-      end
-    end
-    error("No terminal found")
+function M.get_native_term()
+  if M.termcache then
+    return M.termcache
   end
+  for _, v in ipairs(terminals) do
+    if vim.fn.executable(v) then
+      M.termcache = v
+      return M.termcache
+    end
+  end
+  error("No terminal found")
+end
+
+function M.native_term(cmd, term)
+  term = term or M.get_native_term()
+  vim.cmd('silent! !'..table.concat({term, '-e', cmd}, ' ')..' &')
 end
 
 M.keymap = {
-  main = '<leader>ot',
-  sub = '<leader>oT',
+  main = '<M-t>',
+  sub = '<leader>T',
 }
 
 M.action = {
