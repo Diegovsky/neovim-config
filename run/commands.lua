@@ -74,25 +74,15 @@ command('LspSetup', function(tbl)
   require'private.lspcfg'.setup_server(tbl.fargs[1])
 end, {nargs = '*'})
 
-simplecmd('LspToggleLog', function()
-    local logpath = vim.lsp.get_log_path()
-    if not logpath then
-        print"Couldn't get lsp log path"
-        return
-    end
-    require'private.splits'.togglesplit(logpath, function (_winnr)
-        if #vim.api.nvim_get_autocmds({event='BufRead', pattern = logpath}) == 0 then
-            vim.api.nvim_create_autocmd({"BufRead"}, {
-                pattern = logpath,
-                desc = 'Reload lsp log',
-                callback = function ()
-                    print('replacing')
-                    vim.cmd[[s/\\n/\r/g]]
-                end
-            })
-        end
-    end)
-end)
+command('LspActivateProfile', function (tbl)
+  local profile = tbl.fargs[1]
+  require'private.lspcfg.profiles'.activate_profile(profile)
+end, {nargs = 1, complete = function (lead)
+    local profiles = vim.tbl_keys(require'private.lspcfg.profiles'.profiles)
+    return vim.tbl_filter(function (el)
+      return string.find(el, lead, nil, true)
+    end, profiles)
+end})
 
 command('CodePrint', function()
   if package.loaded.silicon then

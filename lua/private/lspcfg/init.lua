@@ -31,7 +31,6 @@ function M.setup_server(name, opt)
       debounce_text_changes = 150,
     },
   }
-  args = require'private.lspcfg.profiles'.apply_profile(name, args)
   args = vim.tbl_deep_extend('force', args, opt or {})
   if name == "rust_analyzer" then
     require("rust-tools").setup { server = args }

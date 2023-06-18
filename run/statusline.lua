@@ -216,21 +216,6 @@ local comps = {
         fg = colors.yellow,
       },
     },
-    profile = {
-      provider = function()
-        local name = require("private.lspcfg.profiles").get_current_profile_name()
-        if name then
-          return ("[%s]"):format(name)
-        else
-          return ""
-        end
-      end,
-      hl = {
-        fg = colors.bg,
-        bg = colors.red,
-      },
-      left_sep = " ",
-    },
   },
   git = {
     branch = {
