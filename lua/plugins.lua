@@ -252,6 +252,7 @@ return {
         sources = {
           null.builtins.formatting.stylua, -- aur: stylua
           null.builtins.formatting.black, -- pacman: python-black
+          null.builtins.formatting.rome, -- aur: rome
           -- null.builtins.formatting.rustfmt,
         },
       }
