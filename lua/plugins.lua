@@ -68,8 +68,6 @@ return {
   { "akinsho/flutter-tools.nvim" },
   -- Lsp extensions for rust
   { "simrat39/rust-tools.nvim" },
-  -- Lsp extensions for java
-  "mfussenegger/nvim-jdtls",
 
   -- File manager
   "elihunter173/dirbuf.nvim",
@@ -92,10 +90,11 @@ return {
   { "williamboman/mason.nvim", config = function()
     require 'mason'.setup()
     require 'mason-lspconfig'.setup()
-  end, dependencies = { 'williamboman/mason-lspconfig.nvim' } },
+  end, dependencies = { 'williamboman/mason-lspconfig.nvim' }, lazy = false },
 
   { "nvim-tree/nvim-tree.lua", config = function ()
     require'nvim-tree'.setup({
+      hijack_directories = { enable = false},
       on_attach=function (bufnr)
         local api = require'nvim-tree.api'
 
@@ -116,10 +115,11 @@ return {
           vim.keymap.set(mode, rhs, lhs, {buffer=bufnr, remap=true, desc='nvim-tree: '..desc})
         end
 
-        keymap('n', '<tab>', '<cr>', 'Open')
+        keymap('n', '<tab>', '<cr>', 'Toggle Open')
         keymap('n', '-', function() api.tree.change_root('..') end, 'Open Parent')
         keymap('n', '?', function() api.tree.toggle_help() end, 'Toggle Help')
-        keymap('n', 'c', function() api.tree.change_root_to_node() end, 'Toggle Help')
+        keymap('n', 'c', function() api.tree.change_root_to_node() end, 'Change root to...')
+        keymap('n', 'U', function() api.tree.change_root(vim.fn.getcwd()) end, 'Cd into current dir')
       end
     })
   end },
@@ -143,8 +143,8 @@ return {
   },
   {
     "nvim-treesitter/nvim-treesitter",
-    run = "<cmd>TSUpdate",
-    event = "BufReadPost",
+    run = "<cmd>TSUpdate<cr>",
+    lazy = false,
     dependencies = { "nvim-treesitter/nvim-treesitter-textobjects" },
     config = function() require("nvim-treesitter.configs").setup(require 'private.plugcfg.treesitter') end
   },
@@ -184,6 +184,7 @@ return {
   -- LSP Loading progress
   {
     "j-hui/fidget.nvim",
+    branch = "legacy",
     config = function()
       require("fidget").setup {}
     end,

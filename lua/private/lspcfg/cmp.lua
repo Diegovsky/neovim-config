@@ -42,12 +42,13 @@ M.cmp_init = function(force)
   local compare = require "cmp.config.compare"
 ---@diagnostic disable-next-line: redundant-parameter
   cmp.setup {
+    performance = { },
     view = {
       entries = { name='custom' }
     },
-    completion = {
+    --[[ completion = {
       keyword_length=1,
-    },
+    }, ]]
     window = {
       completion = {
         winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,Search:None",
@@ -101,7 +102,7 @@ M.cmp_init = function(force)
       ["<up>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s" }),
     },
     sources = {
-      { name = "nvim_lsp" },
+      { name = "nvim_lsp", max_item_count = 30 },
       { name = "nvim_lsp_signature_help" },
       { name = "snippy" },
       { name = "copilot" }

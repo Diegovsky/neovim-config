@@ -16,7 +16,9 @@ M.servers = {
   "lua_ls",
   "teal_ls",
   "vala_ls",
+  "jdtls", -- java
   "tsserver",
+  "gdscript",
   "r_language_server",
   "zls",
 }
@@ -34,8 +36,6 @@ function M.setup_server(name, opt)
   args = vim.tbl_deep_extend('force', args, opt or {})
   if name == "rust_analyzer" then
     require("rust-tools").setup { server = args }
-  elseif name == 'jdtls' then
-    require'jdtls'.start_or_attach(args)
   elseif name == 'dartls' then
     require'flutter-tools'.setup({
       lsp = args
