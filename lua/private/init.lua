@@ -1,9 +1,27 @@
 --- @class Private
---- @field bootstrap Privatebootstrap
---- @field keybindutils Privatekeybindutils
---- @field term Privateterm
---- @field lspcfg Privatelspcfg
 local M = {}
+
+--- Runs all lua files on `run`/
+function M.run_config()
+  local scandir = require "plenary.scandir"
+  local luapath = require("plenary.path"):new(NVIM_CONFIG_FOLDER, "run")
+  scandir.scan_dir(tostring(luapath), {
+    on_insert = function(file)
+      local status, err = pcall(dofile, file)
+      if not status and err ~= nil then
+        print(('An error occoured while parsing a file: "%s"'):format(err))
+      end
+    end,
+  })
+end
+
+---Returns true if the package exists (can be loaded)
+---@param pkg string
+---@return boolean
+function M.package_exists(pkg)
+  local status, _ = pcall(require, pkg)
+  return status
+end
 
 --- Returns true if an executable named `bin` exists on the system
 --- @param bin string
@@ -48,28 +66,6 @@ function M.tbl_join(behaviour, ...)
         end
     end
     return merged
-end
-
-CALL_ONCE = setmetatable({}, {
-  --- Returns `true` if function has not ran yet,
-  --- `false` if function has ran
-  __call = function (self, i)
-    if self[i] ~= 'ran' then
-      return true
-    else
-      self[i] = 'ran'
-      return false
-    end
-  end
-})
-
-M.run_once = CALL_ONCE
-M.try_run = M.run_once
-
-function M.unrun(gvarname)
-  local r = CALL_ONCE[gvarname]
-  CALL_ONCE[gvarname] = 'cancelled'
-  return r
 end
 
 --- @param f function

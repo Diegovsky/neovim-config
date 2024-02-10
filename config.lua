@@ -1,5 +1,5 @@
-if not require'private'.run_once('CONFIG') then
-    return
+if INIT_HAPPENED then
+  return
 end
 
 if Priv.executable('nvr') then

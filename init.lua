@@ -25,22 +25,10 @@ end
 
 -- Bootstrap fennel support
 -- require "hotpot"
--- Run .vim files before loading plugins
-local scandir = require "plenary.scandir"
-
-
--- Run all lua files on run/
-local luapath = require("plenary.path"):new(NVIM_CONFIG_FOLDER, "run")
-scandir.scan_dir(tostring(luapath), {
-  on_insert = function(file)
-    local status, err = pcall(dofile, file)
-    if not status and err ~= nil then
-      print(('An error occoured while parsing a file: "%s"'):format(err))
-    end
-  end,
-})
 
 require'neodev'.setup()
+
+Priv.run_config()
 require("private.lspcfg").init()
 
 INIT_HAPPENED = true

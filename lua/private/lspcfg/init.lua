@@ -16,7 +16,6 @@ M.servers = {
   "lua_ls",
   "teal_ls",
   "vala_ls",
-  "jdtls", -- java
   "tsserver",
   "gdscript",
   "r_language_server",
@@ -40,6 +39,7 @@ function M.setup_server(name, opt)
     require'flutter-tools'.setup({
       lsp = args
     })
+
   else
     lspconfig[name].setup(args)
   end
@@ -75,26 +75,30 @@ M.on_attach = function(_client, bufnr)
   }, nil, nil, opts)
 end
 
-M.capabilities = require("cmp_nvim_lsp").default_capabilities()
-M.capabilities.textDocument.foldingRange = {
-    dynamicRegistration = false,
-    lineFoldingOnly = true
-}
-M.capabilities.textDocument.completion.completionItem.snippetSupport = true
-M.capabilities.textDocument.completion.completionItem.resolveSupport = {
-  properties = {
-    "documentation",
-    "detail",
-    "additionalTextEdits",
-  },
-}
+
+function M.make_capabilities()
+  local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+  capabilities.textDocument.foldingRange = {
+      dynamicRegistration = true,
+      lineFoldingOnly = true
+  }
+  --[[ capabilities.textDocument.completion.completionItem.snippetSupport = true
+  capabilities.textDocument.completion.completionItem.resolveSupport = {
+    properties = {
+      "documentation",
+      "detail",
+      "additionalTextEdits",
+    },
+  } ]]
+
+
+  return capabilities
+end
 
 M.quirks = { }
 
-M.init = function(force)
-  if not force and not require("private").run_once "LSP_INIT" then
-    return
-  end
+M.init = function()
   for _, lsp in ipairs(M.servers) do
     M.setup_server(lsp)
   end

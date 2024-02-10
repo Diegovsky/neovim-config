@@ -10,6 +10,7 @@ kutils.declmaps('n', {
   ["so"] = dap.step_over,
   ["si"] = dap.step_into,
   ["o"]  = dapui.toggle,
+  ["s"]  = dap.close,
 }, nil, kutils.prefix('<leader>d'))
 
 local adapters = {

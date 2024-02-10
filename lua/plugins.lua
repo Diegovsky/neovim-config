@@ -15,6 +15,17 @@ local projection = function()
     end
 end
 
+local function silicon()
+  if require 'private'.executable("silicon") then
+    -- transforms code into images.
+    return { "NarutoXY/silicon.lua", config = function()
+      require 'silicon'.setup(require 'private.plugcfg.silicon')
+    end }
+  else
+    return {}
+  end
+end
+
 return {
   -- Sensible vim defaults
   "tpope/vim-sensible",
@@ -22,6 +33,10 @@ return {
 
   -- hyprland config hl
   {'theRealCarneiro/hyprland-vim-syntax', ft='hypr'},
+
+  {'folke/trouble.nvim', opts = {
+    position = 'bottom',
+  }},
 
   {'kevinhwang91/nvim-ufo', config=function() require'ufo'.setup{
     provider_selector = function(bufnr, filetype, buftype)
@@ -36,8 +51,11 @@ return {
       suggestion = { enabled = false },
       panel = { enabled = false }
     }
-    require'copilot_cmp'.setup()
+    require'copilot_cmp'.setup({event={'LspAttach'}})
+    require'copilot.command'.disable()
   end, dependencies = "zbirenbaum/copilot.lua" },
+
+  "mfussenegger/nvim-jdtls",
 
   -- Fennel support
   -- "rktjmp/hotpot.nvim",
@@ -221,12 +239,7 @@ return {
       require("onedark").load()
     end,
   },
-  --[[ if require 'private'.executable("silicon") then
-    -- transforms code into images.
-    { "NarutoXY/silicon.lua", config = function()
-      require 'silicon'.setup(require 'private.plugcfg.silicon')
-    end },
-  end ]]
+  silicon(),
   "mfussenegger/nvim-dap",
   { "rcarriga/nvim-dap-ui", config = function()
     require 'dapui'.setup()
@@ -237,7 +250,9 @@ return {
     "folke/trouble.nvim",
     dependencies = { "kyazdani42/nvim-web-devicons" },
     config = function()
-      require("trouble").setup {}
+      require("trouble").setup {
+        auto_fold = true,
+      }
     end,
   },
   {

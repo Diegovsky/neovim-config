@@ -86,9 +86,9 @@ end})
 
 command('CodePrint', function()
   if package.loaded.silicon then
-    require("silicon").visualise_api({to_clip = true})
+    require("silicon").visualise_api({to_clip = true, visible=true})
   else
-    print("Silicon is not installed :(")
+    print("Silicon plugin is not installed :(")
   end
   end, {
     nargs=0,

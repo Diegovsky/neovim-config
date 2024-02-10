@@ -30,11 +30,7 @@ local stab = lspmove(cmp.select_prev_item,
                      function() snippy.can_jump(-1) end,
                      snippy.previous)
 
-M.cmp_init = function(force)
-  force = force or false
-  if not force and not require("private").run_once "CMP_INIT" then
-    return false
-  end
+M.cmp_init = function()
 
   dofile(NVIM_CONFIG_FOLDER..'/run/highlight.lua')
 
@@ -71,20 +67,25 @@ M.cmp_init = function(force)
         require("snippy").expand_snippet(args.body)
       end,
     },
+    matching = {
+      disallow_fuzzy_matching = false,
+      disallow_prefix_unmatching = true,
+      disallow_partial_matching = false,
+    },
     sorting = {
       priority_weight = 1.0,
       comparators = {
-        compare.score, -- based on :  score = score + ((#sources - (source_index - 1)) * sorting.priority_weight)
+        function (item1, item2)
+
+        end,
+        compare.scopes,
         compare.recently_used,
-        compare.exact,
         compare.kind,
-        -- compare.score_offset, -- not good at all
-        -- compare.offset,
-        -- compare.locality, -- suspected of changing cursor location
-        -- compare.order,
-        -- compare.scopes, -- what?
-        -- compare.sort_text,
-        -- compare.length, -- useless
+        compare.exact,
+        compare.score,
+        compare.length,
+        compare.offset,
+        compare.locality
       },
     },
     mapping = {
@@ -102,7 +103,9 @@ M.cmp_init = function(force)
       ["<up>"] = cmp.mapping(cmp.mapping.select_prev_item(), { "i", "s" }),
     },
     sources = {
-      { name = "nvim_lsp", max_item_count = 30 },
+      { name = "nvim_lsp", max_item_count = 30, entry_filter = function(entry, ctx)
+        return not string.match(entry:get_completion_item().label, 'owo')
+      end },
       { name = "nvim_lsp_signature_help" },
       { name = "snippy" },
       { name = "copilot" }
@@ -110,10 +113,8 @@ M.cmp_init = function(force)
   }
 
   -- Prevemt cmp from messing with telescope
-  vim.api.nvim_exec(
-    "autocmd FileType TelescopePrompt lua require('cmp').setup.buffer{enable=false}",
-    true
-  )
+---@diagnostic disable-next-line: missing-fields
+  vim.api.nvim_create_autocmd('FileType', {pattern='TelescopePrompt', callback=function() require'cmp'.setup.buffer{enabled=false} end})
 end
 
 return M
