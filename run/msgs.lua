@@ -8,8 +8,9 @@ require('notify').setup({
   fps=60,
   minimum_width=20,
   maximum_heght=10,
-  timeout=1000,
+  timeout=2000,
   max_width=70,
+  render='wrapped-compact'
 })
 
 ---@diagnostic disable-next-line: duplicate-set-field
