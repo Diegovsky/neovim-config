@@ -75,9 +75,6 @@ M.cmp_init = function()
     sorting = {
       priority_weight = 1.0,
       comparators = {
-        function (item1, item2)
-
-        end,
         compare.scopes,
         compare.recently_used,
         compare.kind,

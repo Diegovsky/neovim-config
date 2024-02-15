@@ -34,10 +34,6 @@ return {
   -- hyprland config hl
   {'theRealCarneiro/hyprland-vim-syntax', ft='hypr'},
 
-  {'folke/trouble.nvim', opts = {
-    position = 'bottom',
-  }},
-
   {'kevinhwang91/nvim-ufo', config=function() require'ufo'.setup{
     provider_selector = function(bufnr, filetype, buftype)
       return {'treesitter', 'indent'}
@@ -252,6 +248,7 @@ return {
     config = function()
       require("trouble").setup {
         auto_fold = true,
+        severity = vim.diagnostic.severity.ERROR
       }
     end,
   },
