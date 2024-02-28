@@ -1,0 +1,9 @@
+snippet fnm "Failable method"
+    fn ${1:function_name}(&self${2}) -> Result<${3:()}> {
+	$0
+    }
+
+snippet fnmm "Failable mutable method"
+    fn ${1:function_name}(&mut self, ${2}) -> Result<${3:()}> {
+	$0
+    }

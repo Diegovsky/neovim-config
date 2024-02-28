@@ -105,14 +105,6 @@ kutils.declmaps(
   kutils.prefix("<leader>g")
 )
 
--- Add copy and pasting like common GUIs.
-kutils.declmaps({ 'n', 'v' }, {
-  y = 'y',
-  Y = 'Y',
-  P = 'P',
-  p = 'p',
-}, kutils.prefix('"+'), kutils.fmt("<M-%s>"))
-
 -- allow to quit terminal mode using ESC
 keymap('t', '<esc>', '<C-\\><C-n>')
 -- use qq as a bracket navigator

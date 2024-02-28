@@ -145,16 +145,29 @@ return {
       override = {},
       default = true,
     } end},
+
+  { "honza/vim-snippets", lazy = false },
+  {
+    "L3MON4D3/LuaSnip",
+    -- update occasionally
+    dependencies = {'saadparwaiz1/cmp_luasnip'},
+    lazy = false,
+    build = "make install_jsregexp",
+    config = function ()
+      require("luasnip.loaders.from_snipmate").lazy_load()
+      require("luasnip.loaders.from_vscode").lazy_load()
+    end
+
+  },
+  -- cmp
   {
     "hrsh7th/nvim-cmp",
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
-      "dcampos/nvim-snippy",
-      "dcampos/cmp-snippy",
-      "honza/vim-snippets",
       "hrsh7th/cmp-nvim-lsp-signature-help",
     },
   },
+
   {
     "nvim-treesitter/nvim-treesitter",
     run = "<cmd>TSUpdate<cr>",

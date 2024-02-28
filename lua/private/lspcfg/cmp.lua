@@ -1,7 +1,7 @@
 local M = {}
 
 local cmp = require'cmp'
-local snippy = require'snippy'
+local snippets = require'private.lspcfg.snippets'
 
 local has_words_before = function()
   local line, col = unpack(vim.api.nvim_win_get_cursor(0))
@@ -22,13 +22,13 @@ local function lspmove(cmpmove, snipcanmove, snipmove)
   end
 end
 
-local tab = lspmove(cmp.select_next_item,
-                    snippy.can_expand_or_advance,
-                    snippy.expand_or_advance)
+local P = require'private'.partial
 
-local stab = lspmove(cmp.select_prev_item,
-                     function() snippy.can_jump(-1) end,
-                     snippy.previous)
+local next = P(lspmove, cmp.select_next_item)
+local prev = P(lspmove, cmp.select_prev_item)
+
+local tab = next(P(snippets.can_scroll, 'next'), P(snippets.scroll, 'next'))
+local stab = prev(P(snippets.can_scroll, 'prev'), P(snippets.scroll, 'prev'))
 
 M.cmp_init = function()
 
@@ -38,12 +38,11 @@ M.cmp_init = function()
   local compare = require "cmp.config.compare"
 ---@diagnostic disable-next-line: redundant-parameter
   cmp.setup {
-    performance = { },
     view = {
       entries = { name='custom' }
     },
     --[[ completion = {
-      keyword_length=1,
+      keyword_pattern
     }, ]]
     window = {
       completion = {
@@ -63,9 +62,7 @@ M.cmp_init = function()
       end,
     },
     snippet = {
-      expand = function(args)
-        require("snippy").expand_snippet(args.body)
-      end,
+      expand = snippets.expand,
     },
     matching = {
       disallow_fuzzy_matching = false,
@@ -104,7 +101,7 @@ M.cmp_init = function()
         return not string.match(entry:get_completion_item().label, 'owo')
       end },
       { name = "nvim_lsp_signature_help" },
-      { name = "snippy" },
+      snippets.cmp_source(),
       { name = "copilot" }
     },
   }

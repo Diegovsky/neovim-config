@@ -1,6 +1,12 @@
 --- @class Private
 local M = {}
 
+function M.partial(fun, arg)
+  return function(...)
+    return fun(arg, ...)
+  end
+end
+
 --- Runs all lua files on `run`/
 function M.run_config()
   local scandir = require "plenary.scandir"
