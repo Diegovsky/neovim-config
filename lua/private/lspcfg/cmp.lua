@@ -8,27 +8,27 @@ local has_words_before = function()
   return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 end
 
-local function lspmove(cmpmove, snipcanmove, snipmove)
-  return function(fallback)
-    if cmp.visible() then
-      cmpmove()
-    elseif snipcanmove() then
-        snipmove()
-    elseif has_words_before() then
-        cmp.complete()
-    else
-      fallback()
-    end
+local tab = cmp.mapping(function(fallback)
+  if cmp.visible() then
+    cmp.select_next_item()
+  elseif snippets.can_expand_or_scroll() then
+    snippets.expand_or_scoll()
+  elseif has_words_before() then
+    cmp.complete()
+  else
+    fallback()
   end
-end
+end)
 
-local P = require'private'.partial
-
-local next = P(lspmove, cmp.select_next_item)
-local prev = P(lspmove, cmp.select_prev_item)
-
-local tab = next(P(snippets.can_scroll, 'next'), P(snippets.scroll, 'next'))
-local stab = prev(P(snippets.can_scroll, 'prev'), P(snippets.scroll, 'prev'))
+local stab = cmp.mapping(function(fallback)
+  if cmp.visible() then
+    cmp.select_prev_item()
+  elseif snippets.can_scroll('prev') then
+    snippets.scroll('prev')
+  else
+    fallback()
+  end
+end)
 
 M.cmp_init = function()
 

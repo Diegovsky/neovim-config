@@ -52,15 +52,28 @@ end,
   end,
 })
 
+local edit_subcommands = require'private'.hashset('add', 'rm')
+local build_subcommands = require'private'.hashset('run', 'build')
 
-require'private'.onft('rust', 'Add Cargo user command', function ()
-  command('Cargo', function(tbl)
-    print(tbl.args)
+command('Cargo', function(tbl)
+  local subcommand = tbl.fargs[1]
+
+  if build_subcommands[subcommand] then
+    local cmd = table.concat({'cargo', unpack(tbl.fargs), ''}, ' ')
+    cmd = cmd .. '; read'
+    require'private.term'.native_term({'sh', '-c', cmd})
+  else
     vim.cmd('!cargo ' .. tbl.args)
-    vim.cmd'RustReloadWorkspace'
-  end, { nargs = '+' })
-  create_command('Cargo')
-end)
+  end
+
+
+  if edit_subcommands[subcommand] then
+    -- Update the rust-analyzer workspace
+    ---@diagnostic disable-next-line: param-type-mismatch
+    pcall(vim.cmd, 'RustReloadWorkspace')
+  end
+end, { nargs = '+' })
+create_command('Cargo')
 
 command('W', function (tbl)
   vim.cmd('w '..(tbl.args or ''))

@@ -6,6 +6,7 @@
 --- @field cmp_source fun(): table
 --- @field can_expand_or_scroll fun(): boolean
 --- @field expand fun(args: any): any
+--- @field expand_or_scroll fun(): any
 local snippet_engine = nil
 
 

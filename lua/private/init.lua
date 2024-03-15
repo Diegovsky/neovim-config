@@ -21,6 +21,21 @@ function M.run_config()
   })
 end
 
+local hashset_meta =  {__index = function(self, key)
+  return rawget(self, key) or false
+end}
+
+--- Creates a hashset with the elements of `...`
+---@param ... any
+---@return table
+function M.hashset(...)
+  local tbl = {}
+  for _, val in ipairs({...}) do
+    tbl[val] = true
+  end
+  return setmetatable(tbl, hashset_meta)
+end
+
 ---Returns true if the package exists (can be loaded)
 ---@param pkg string
 ---@return boolean

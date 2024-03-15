@@ -30,9 +30,23 @@ function M.get_native_term()
   error("No terminal found")
 end
 
+local Job = require'plenary.job'
+
+---Opens a terminal outside of neovim in the current directory
+---@param cmd table?
+---@param term string?
 function M.native_term(cmd, term)
   term = term or M.get_native_term()
-  vim.cmd('silent! !'..table.concat({term, '-e', cmd}, ' ')..' &')
+  if cmd then
+    table.insert(cmd, 1, '-e')
+  end
+  Job:new{
+    enable_handlers = false,
+    enabled_recording = false,
+    interactive = false,
+    command = term,
+    args = cmd,
+  }:start()
 end
 
 M.keymap = {
