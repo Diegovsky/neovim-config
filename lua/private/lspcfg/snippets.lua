@@ -14,6 +14,8 @@ for _, backend in ipairs({'luasnip', 'snippy'}) do
   local status, _ = pcall(require, backend)
   if status then
     snippet_engine = require('private.lspcfg.backend-'..backend)
+    snippet_engine.name = backend
+    break
   end
 end
 

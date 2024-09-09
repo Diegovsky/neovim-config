@@ -7,8 +7,13 @@ pcall(vim.cmd, "language en_GB.utf8")
 NVIM_CONFIG_FOLDER = NVIM_CONFIG_FOLDER or vim.fn.stdpath "config" .. "/"
 NVIM_INIT_FILE = NVIM_CONFIG_FOLDER .. "/init.lua"
 
+DEBUG = os.getenv('DEBUG')
+
 --- @type Private
 Priv = require'private'
+
+---@diagnostic disable-next-line: lowercase-global
+dbg = require("private").debug
 
 local boostrap = require 'private.bootstrap'
 
@@ -24,11 +29,16 @@ if not INIT_HAPPENED then
 end
 
 -- Bootstrap fennel support
--- require "hotpot"
+local has_fennel, _ = pcall(require, "hotpot")
 
-require'neodev'.setup()
+local status, pkg = pcall(require, 'neodev')
+if status then
+	pkg.setup()
+end
 
-Priv.run_config()
+if has_fennel then
+  Priv.run_config()
+end
 require("private.lspcfg").init()
 
 INIT_HAPPENED = true

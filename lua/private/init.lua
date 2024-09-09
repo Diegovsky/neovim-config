@@ -21,6 +21,21 @@ function M.run_config()
   })
 end
 
+---Returns the property located at `path` or nil. 
+---@param obj table
+---@param path string
+---@return any|nil
+function M.recget(obj, path)
+  local curobj = obj
+  for name in string.gmatch(path, '(%w+)%.?') do
+    curobj = curobj[name]
+    if curobj == nil then
+      break
+    end
+  end
+  return curobj
+end
+
 local hashset_meta =  {__index = function(self, key)
   return rawget(self, key) or false
 end}
@@ -145,22 +160,26 @@ function M.randomboolean(chance)
   return math.random() <= chance
 end
 
-local f = io.output()
-function M.debug(...)
-  local args = {...}
-  local len = select('#', ...)
-  for i=1,len do
-    if i >= 2 then
-      f:write(i..': ')
+if _G['DEBUG'] then
+  local f = assert(io.open("nvim-debug.log", 'w'), 'failed to open debug file')
+  function M.debug(...)
+    local args = {...}
+    local len = select('#', ...)
+    for i=1,len do
+      if i >= 2 then
+        f:write(i..': ')
+      end
+      local txt = vim.inspect(args[i])
+      f:write(txt..'\n')
     end
-    local txt = vim.inspect(args[i])
-    f:write(txt..'\n')
+    f:flush()
+    return ...
   end
-  --f:close()
-  return ...
+else
+  function M.debug(...)
+    -- do nothing
+  end
 end
-
-
 function M.onft(ft, desc, func, ...)
   local args = {...}
   vim.api.nvim_create_autocmd({"FileType"}, {

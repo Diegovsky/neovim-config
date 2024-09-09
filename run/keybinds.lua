@@ -47,10 +47,6 @@ kutils.declmaps('n', {
     end
   end,
   ['<leader>we']       = 'TroubleToggle workspace_diagnostics',
-  ['<M-h>']            = 'TmuxNavigateLeft',
-  ['<M-j>']            = 'TmuxNavigateDown',
-  ['<M-k>']            = 'TmuxNavigateUp',
-  ['<M-l>']            = 'TmuxNavigateRight',
   ['<leader>oo']       = 'NvimTreeToggle',
   -- Wipe buffers
   ['<leader>bw']       = require 'private'.wipeHiddenBuffers,
@@ -58,7 +54,7 @@ kutils.declmaps('n', {
 
 -- Remap <C-w><key> to <M-<key>>
 do
-  local winkeys = 'wHJKLT|_=<>'
+  local winkeys = 'whjklHJKLT|_=<>'
   for key in winkeys:gmatch('.') do
     keymap('n', ('<M-%s>'):format(key), ('<cmd>wincmd %s<cr>'):format(key), {})
   end
@@ -125,16 +121,3 @@ kutils.declremaps('n', {
 for char in string.gmatch('(){}[]', '.') do
   keymap('n', char, 'f' .. char, {})
 end
-
--- Add underscore aware word movements
-local undmove = function(key)
-  local oldopt = vim.o.iskeyword
-  vim.opt.iskeyword:remove { "_" }
-  vim.cmd('norm ' .. key)
-  vim.o.iskeyword = oldopt
-end
-
-kutils.declmaps({ 'n', 'v', 'o' }, {
-  w = 'w',
-  b = 'b',
-}, kutils.runfunc(undmove), kutils.prefix("<leader>"))

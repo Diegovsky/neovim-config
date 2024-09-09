@@ -1,6 +1,3 @@
-local dbg = require("private").debug
-
-
 local commands = {}
 local args = {}
 
@@ -68,9 +65,7 @@ command('Cargo', function(tbl)
 
 
   if edit_subcommands[subcommand] then
-    -- Update the rust-analyzer workspace
-    ---@diagnostic disable-next-line: param-type-mismatch
-    pcall(vim.cmd, 'RustReloadWorkspace')
+    require'rustaceanvim.commands.workspace_refresh'()
   end
 end, { nargs = '+' })
 create_command('Cargo')

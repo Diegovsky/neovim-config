@@ -35,7 +35,7 @@ function M.expand(args)
 end
 
 function M.cmp_source()
-  return { name = 'luasnip', option = { use_show_condition = false } }
+  return { name = 'luasnip' }
 end
 
 return M

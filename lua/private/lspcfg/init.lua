@@ -4,21 +4,21 @@ local M = {}
 
 M.servers = {
   "clangd",
+  "csharp_ls",
   -- "ccls",
   "dartls",
   "emmet_ls",
+  "fennel_ls",
+  "gdscript",
   "gopls",
   "hls",
   "lemminx", -- xml server
+  "lua_ls",
   "pyright",
   "rust_analyzer",
   "solargraph", -- ruby lsp
-  "lua_ls",
-  "teal_ls",
-  "vala_ls",
   "tsserver",
-  "gdscript",
-  "r_language_server",
+  "vala_ls",
   "zls",
 }
 
@@ -34,7 +34,7 @@ function M.setup_server(name, opt)
   }
   args = vim.tbl_deep_extend('force', args, opt or {})
   if name == "rust_analyzer" then
-    require("rust-tools").setup { server = args }
+    -- already done by rustaceanvim :)
   elseif name == 'dartls' then
     require'flutter-tools'.setup({
       lsp = args
@@ -83,14 +83,14 @@ function M.make_capabilities()
       dynamicRegistration = true,
       lineFoldingOnly = true
   }
-  --[[ capabilities.textDocument.completion.completionItem.snippetSupport = true
+  capabilities.textDocument.completion.completionItem.snippetSupport = true
   capabilities.textDocument.completion.completionItem.resolveSupport = {
     properties = {
       "documentation",
       "detail",
       "additionalTextEdits",
     },
-  } ]]
+  }
 
 
   return capabilities
