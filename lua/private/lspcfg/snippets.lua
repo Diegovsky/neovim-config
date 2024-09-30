@@ -10,7 +10,7 @@
 local snippet_engine = nil
 
 
-for _, backend in ipairs({'luasnip', 'snippy'}) do
+for _, backend in ipairs({'luasnip'}) do
   local status, _ = pcall(require, backend)
   if status then
     snippet_engine = require('private.lspcfg.backend-'..backend)

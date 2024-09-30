@@ -12,6 +12,7 @@ function M.run_config()
   local scandir = require "plenary.scandir"
   local luapath = require("plenary.path"):new(NVIM_CONFIG_FOLDER, "run")
   scandir.scan_dir(tostring(luapath), {
+    depth = 1,
     on_insert = function(file)
       local status, err = pcall(dofile, file)
       if not status and err ~= nil then
@@ -51,14 +52,6 @@ function M.hashset(...)
   return setmetatable(tbl, hashset_meta)
 end
 
----Returns true if the package exists (can be loaded)
----@param pkg string
----@return boolean
-function M.package_exists(pkg)
-  local status, _ = pcall(require, pkg)
-  return status
-end
-
 --- Returns true if an executable named `bin` exists on the system
 --- @param bin string
 --- @return boolean
@@ -86,80 +79,6 @@ function M.wipeHiddenBuffers()
     end
 end
 
-local extend = vim.tbl_deep_extend
---- Merges two map tables and their list parts in order.
---- The first argument decides what to do if the same
---- key is found in multiple tables.
---- @param behaviour 'error'|'keep'|'force'
---- @vararg table
-function M.tbl_join(behaviour, ...)
-    local merged = extend(behaviour, ...)
-    local args = {...}
-    local size = select('#', ...)
-    for i = 1, size do
-        for _, v in ipairs(args[i]) do
-            merged[#merged+1] = v
-        end
-    end
-    return merged
-end
-
---- @param f function
-function M.cached(f, ...)
-  local value = nil
-  local args = { ... }
-  return function()
-    if value == nil then
-      value = f(unpack(args))
-    end
-    return value
-  end
-end
-
-local chars = {}
--- A..Z
-for i = 0, 25 do
-  table.insert(chars, string.char(65 + i))
-end
--- a..z
-for i = 0, 25 do
-  table.insert(chars, string.char(97 + i))
-end
--- 0..10
-for i = 0, 9 do
-  table.insert(chars, string.char(48 + i))
-end
-
-function M.randomstring(a, b)
-  local min
-  local max
-  if b then
-    min = a
-    max = b
-  else
-    min = 1
-    max = a
-  end
-
-  if min > max then
-    error "Expected max to be greater than min"
-  elseif min <= 0 then
-    error "Min must be positive"
-  elseif max <= 0 then
-    error "Max must be positive"
-  end
-  local buf = ""
-  for _ = 0, math.random(min, max) do
-    buf = buf .. chars[math.random(#chars)]
-  end
-  return buf
-end
-
-function M.randomboolean(chance)
-  chance = chance or 0.5
-  return math.random() <= chance
-end
-
 if _G['DEBUG'] then
   local f = assert(io.open("nvim-debug.log", 'w'), 'failed to open debug file')
   function M.debug(...)
@@ -180,36 +99,5 @@ else
     -- do nothing
   end
 end
-function M.onft(ft, desc, func, ...)
-  local args = {...}
-  vim.api.nvim_create_autocmd({"FileType"}, {
-    pattern = ft,
-    desc = desc or 'private.onft callback',
-    callback = function ()
-      func(unpack(args))
-    end
-  })
-end
 
-function M.t(s)
-  return vim.api.nvim_replace_termcodes(s, true, true, true)
-end
-
-function string.startswith(text, text2)
-  return string.sub(text, 1, #text2) == text2
-end
-
-function M.insertlazy(prefix, tbl)
-  return setmetatable(tbl, {
-    __index = function(self, key)
-      local suc, mod = pcall(require, prefix..'.'..key)
-      if suc then
-        return mod
-      else
-        return rawget(self, key)
-      end
-    end
-  })
-end
-
-return M.insertlazy('private', M)
+return M

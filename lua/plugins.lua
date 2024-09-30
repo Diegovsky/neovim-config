@@ -84,7 +84,7 @@ return {
   "mfussenegger/nvim-jdtls",
 
   -- Fennel support
-  "rktjmp/hotpot.nvim",
+  {"rktjmp/hotpot.nvim"},
   -- Cool prompts for vim.ui
   "stevearc/dressing.nvim",
   -- Cool notifications
@@ -109,7 +109,7 @@ return {
 
 
   -- Git integration
-  {"tpope/vim-fugitive", lazy=true, cmd='Git'},
+  {"tpope/vim-fugitive", lazy=true, cmd={ 'Git', 'Gdiffsplit' }},
 
   -- Lsp extensions for flutter
   { "akinsho/flutter-tools.nvim" },
@@ -117,6 +117,7 @@ return {
   {
     "mrcjkb/rustaceanvim",
     dependencies = { 'neovim/nvim-lspconfig' },
+    filetypes = {'rust'},
     config = function()
       vim.g.rustaceanvim = {
         server = {
@@ -201,15 +202,23 @@ return {
       }
   },
 
-  { "honza/vim-snippets", lazy = false },
   {
     "L3MON4D3/LuaSnip",
     -- update occasionally
-    dependencies = { 'saadparwaiz1/cmp_luasnip' },
+    dependencies = { 'saadparwaiz1/cmp_luasnip', 'rafamadriz/friendly-snippets', "honza/vim-snippets" },
     lazy = false,
-    build = "make install_jsregexp",
+    run = "make install_jsregexp",
     config = function()
-      require("luasnip.loaders.from_snipmate").lazy_load()
+      local ls = require'luasnip'
+      if DEBUG then
+          ls.log.set_loglevel("info")
+      end
+      require("luasnip.loaders.from_snipmate").lazy_load({
+                exclude = {'all', '_'},
+                fs_event_providers = {
+                    libuv = true
+                }
+            })
       require("luasnip.loaders.from_vscode").lazy_load()
     end
 
@@ -252,10 +261,10 @@ return {
     },
   },
   -- Lsp outlines
-  --[[ {
+  {
     "simrat39/symbols-outline.nvim",
     config = function() require('symbols-outline').setup() end
-  }, ]]
+  },
   -- LSP Loading progress
   {
     "j-hui/fidget.nvim",
@@ -296,6 +305,7 @@ return {
       require("onedark").load()
     end,
   },
+  "HiPhish/jinja.vim",
   silicon(),
   "mfussenegger/nvim-dap",
   "nvim-neotest/nvim-nio",

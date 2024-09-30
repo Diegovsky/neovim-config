@@ -15,7 +15,7 @@ require('notify').setup({
 
 ---@diagnostic disable-next-line: duplicate-set-field
 vim.notify = function(msg, level)
-  if level == vim.log.levels.ERROR or level == vim.log.levels.WARN then
+  if level == vim.log.levels.ERROR or level == vim.log.levels.WARN or level == nil then
     require 'notify' (msg, level)
   else
     print(msg)

@@ -1,5 +1,5 @@
 (lambda run [name]
-  (let [name (.. :run name)]
+  (let [name (.. name)]
     (when (. package.loaded name)
       (tset package.loaded name nil))
     (require name)))
@@ -8,5 +8,3 @@
 
 (each [_ file (ipairs run-modules)]
   (run file))
-                    
-(require :run.keymaps)
