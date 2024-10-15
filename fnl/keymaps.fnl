@@ -75,7 +75,7 @@
   (table->mappings 
     {
      :<C-space> "Telescope buffers"
-     :<leader>os "SymbolsOutline"
+     :<leader>os "Outline"
      :<M-i> "vsplit"
      :<M-o> "split"
      :<C-s> "write"

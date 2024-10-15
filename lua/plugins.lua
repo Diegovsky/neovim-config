@@ -262,8 +262,8 @@ return {
   },
   -- Lsp outlines
   {
-    "simrat39/symbols-outline.nvim",
-    config = function() require('symbols-outline').setup() end
+    "hedyhli/outline.nvim",
+    config = true
   },
   -- LSP Loading progress
   {
